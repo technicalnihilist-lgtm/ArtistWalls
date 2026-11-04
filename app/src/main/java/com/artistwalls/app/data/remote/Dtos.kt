@@ -2,6 +2,7 @@ package com.artistwalls.app.data.remote
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 /**
  * Minimal, tolerant model of the MediaWiki action API response.
@@ -49,11 +50,18 @@ data class ImageInfo(
     val extmetadata: Map<String, ExtMetaValue>? = null
 )
 
+/**
+ * extmetadata is loosely typed on the server: `value` is usually a string but can be a
+ * number, and `hidden` arrives as `true`/`false` **or** as an empty string. Typing these
+ * as primitives made kotlinx.serialization abort the whole response
+ * ("Expected valid boolean literal prefix, but had ''"), which left every feed empty.
+ * Holding raw [JsonElement]s and reading them defensively keeps the app decoding.
+ */
 @Serializable
 data class ExtMetaValue(
-    val value: String? = null,
-    val source: String? = null,
-    val hidden: Boolean? = null
+    val value: JsonElement? = null,
+    val source: JsonElement? = null,
+    val hidden: JsonElement? = null
 )
 
 @Serializable
