@@ -13,7 +13,12 @@ import com.artistwalls.app.data.repo.ArtistImageCache
 import com.artistwalls.app.data.repo.WallpaperRepository
 import com.artistwalls.app.data.share.ShareHelper
 import com.artistwalls.app.data.wallpaper.WallpaperSetter
+import com.artistwalls.app.data.model.FxSettings
 import java.io.File
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -84,6 +89,11 @@ class AppContainer(context: Context) {
     /** Hand-off slot so a tapped tile can open instantly, before any refetch. */
     val selection = SelectionHolder()
 
+    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    /** Live visual-effect switches, shared by every screen. */
+    val fx = FxController(appScope, preferences)
+
     companion object {
         const val COMMONS_BASE_URL = "https://commons.wikimedia.org/"
         const val USER_AGENT =
@@ -105,4 +115,31 @@ class SelectionHolder {
 
 val LocalAppContainer = staticCompositionLocalOf<AppContainer> {
     error("AppContainer has not been provided")
+}
+
+/** Current effect switches, so composables can style themselves without a ViewModel. */
+val LocalFxSettings = staticCompositionLocalOf { FxSettings() }
+
+/**
+ * Owns the four switches: mirrors them into a StateFlow the UI observes, and writes
+ * every change straight to DataStore so the choice survives a restart.
+ */
+class FxController(
+    private val scope: CoroutineScope,
+    private val preferences: PreferencesStore
+) {
+    private val _settings = MutableStateFlow(FxSettings())
+    val settings: StateFlow<FxSettings> = _settings.asStateFlow()
+
+    init {
+        scope.launch {
+            preferences.fxSettings.collect { stored -> _settings.value = stored }
+        }
+    }
+
+    fun update(transform: (FxSettings) -> FxSettings) {
+        val next = transform(_settings.value)
+        _settings.value = next
+        scope.launch { preferences.saveFx(next) }
+    }
 }
