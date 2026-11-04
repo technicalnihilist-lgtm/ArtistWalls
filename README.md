@@ -16,6 +16,23 @@ compileSdk 35 · minSdk 24 · targetSdk 35
 
 ---
 
+## Web version
+
+The same app as a single self-contained HTML file — same catalogue, same licence gate,
+same credits, same AMOLED design. It talks to the Commons API through its CORS endpoint
+(`origin=*`), so it needs no server, no build step and no API key.
+
+**Live:** https://technicalnihilist-lgtm.github.io/ArtistWalls/
+**File:** [`docs/index.html`](docs/index.html) — open it directly in any browser.
+
+Differences from the Android build, stated plainly: there is no `WallpaperManager` on the
+web, so **Download** saves the original file to your device and you set it from the gallery.
+Favourites, saved files and history live in `localStorage`. Everything else — live
+discovery, licence filtering, attribution, pagination, search, collections, daily
+wallpaper — is the same logic, ported to JavaScript.
+
+---
+
 ## 1. What it does
 
 | Area | Behaviour |
