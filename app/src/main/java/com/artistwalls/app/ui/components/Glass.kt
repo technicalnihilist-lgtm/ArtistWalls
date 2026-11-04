@@ -12,16 +12,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.artistwalls.app.di.LocalFxSettings
 import com.artistwalls.app.ui.theme.GlassBorder
 import com.artistwalls.app.ui.theme.GlassFill
 
-/** Dark glassmorphism: a very low-alpha fill, a hairline border, no heavy blur. */
-fun Modifier.glass(
+/** The original dark glass: a low-alpha fill with a hairline border. */
+fun Modifier.plainGlass(
     shape: Shape = RoundedCornerShape(20.dp),
     fill: Color = GlassFill,
     border: Color = GlassBorder,
-    borderWidth: androidx.compose.ui.unit.Dp = 1.dp
+    borderWidth: Dp = 1.dp
 ): Modifier = this
     .clip(shape)
     .background(
@@ -31,6 +33,51 @@ fun Modifier.glass(
         shape = shape
     )
     .border(borderWidth, border, shape)
+
+/**
+ * "Liquid glass": a diagonal gloss across the surface plus a bright, glowing edge —
+ * the closest Compose can get to iOS-style glass without sampling the backdrop.
+ */
+fun Modifier.liquidGlass(shape: Shape = RoundedCornerShape(20.dp)): Modifier = this
+    .clip(shape)
+    .background(
+        Brush.linearGradient(
+            listOf(
+                Color.White.copy(alpha = 0.185f),
+                Color.White.copy(alpha = 0.055f),
+                Color.White.copy(alpha = 0.105f)
+            )
+        ),
+        shape = shape
+    )
+    .border(
+        width = 1.dp,
+        brush = Brush.linearGradient(
+            listOf(
+                Color.White.copy(alpha = 0.58f),
+                Color.White.copy(alpha = 0.13f),
+                Color.White.copy(alpha = 0.34f)
+            )
+        ),
+        shape = shape
+    )
+
+/**
+ * Single entry point used by every surface in the app. It reads the Liquid Glass
+ * switch, so flipping it in Settings restyles panels, chips, bars and the tab bar
+ * at once with no other code changes.
+ */
+@Composable
+fun Modifier.glass(
+    shape: Shape = RoundedCornerShape(20.dp),
+    fill: Color = GlassFill,
+    border: Color = GlassBorder,
+    borderWidth: Dp = 1.dp
+): Modifier = if (LocalFxSettings.current.glass) {
+    liquidGlass(shape)
+} else {
+    plainGlass(shape, fill, border, borderWidth)
+}
 
 /** A floating glass panel used for headers, credit blocks and action bars. */
 @Composable
