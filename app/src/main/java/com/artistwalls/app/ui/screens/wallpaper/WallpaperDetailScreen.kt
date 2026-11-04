@@ -3,6 +3,7 @@ package com.artistwalls.app.ui.screens.wallpaper
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -42,9 +44,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -98,16 +103,55 @@ fun WallpaperDetailScreen(
 
     Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         val wallpaper = state.wallpaper
+        val density = LocalDensity.current
+
+        // The info panel is measured so the photograph can be given exactly the space
+        // that is left above it — that is what keeps a portrait shot portrait and a
+        // landscape shot landscape, whole and uncropped, instead of hiding it behind
+        // the panel.
+        var panelHeightPx by remember(wallpaperId) { mutableStateOf(0) }
+        var panelOpen by remember(wallpaperId) { mutableStateOf(true) }
+        val panelPadding = if (panelOpen) with(density) { panelHeightPx.toDp() } else 0.dp
 
         if (wallpaper != null) {
+            // 1. a blurred copy fills the letterbox, so nothing looks empty
             RemoteImage(
                 url = wallpaper.previewUrl,
-                contentDescription = wallpaper.displayTitle,
-                modifier = Modifier.fillMaxSize(),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize().blur(32.dp),
                 contentScale = ContentScale.Crop
             )
-            Box(modifier = Modifier.fillMaxSize().topScrim(1f))
-            Box(modifier = Modifier.fillMaxSize().photoScrim(1f))
+            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.66f)))
+            Box(modifier = Modifier.fillMaxSize().topScrim(0.55f))
+
+            // 2. the photograph itself, never cropped: Fit keeps its own aspect ratio
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = panelPadding)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { panelOpen = !panelOpen }
+            ) {
+                RemoteImage(
+                    url = wallpaper.previewUrl,
+                    contentDescription = wallpaper.displayTitle,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
+                )
+            }
+        }
+
+        if (wallpaper != null && panelOpen) {
+            Text(
+                text = "TAP THE PHOTO TO SEE IT FULL SCREEN",
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.White.copy(alpha = 0.55f),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = with(density) { panelHeightPx.toDp() } + 10.dp)
+            )
         }
 
         // ------------------------------------------------------------ top bar
@@ -156,11 +200,13 @@ fun WallpaperDetailScreen(
         }
 
         // --------------------------------------------------------- info panel
-        if (wallpaper != null) {
+        if (wallpaper != null && panelOpen) {
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
+                    .heightIn(max = 430.dp)
+                    .onSizeChanged { panelHeightPx = it.height }
                     .navigationBarsPadding()
                     .padding(horizontal = 12.dp, vertical = 12.dp)
                     .glass(RoundedCornerShape(26.dp))
