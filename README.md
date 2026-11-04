@@ -16,28 +16,6 @@ compileSdk 35 · minSdk 24 · targetSdk 35
 
 ---
 
-## Screens
-
-| Home | Artist detail | Wallpaper detail |
-| --- | --- | --- |
-| ![Home](docs/screenshots/01-home.png) | ![Artist](docs/screenshots/02-artist.png) | ![Wallpaper](docs/screenshots/03-wallpaper.png) |
-
-| Search | Library | Credits |
-| --- | --- | --- |
-| ![Search](docs/screenshots/04-search.png) | ![Library](docs/screenshots/05-library.png) | ![Credits](docs/screenshots/06-credits.png) |
-
-> These previews are rendered at 1080 × 2400 from the app's own design system (AMOLED
-> palette, glass surfaces, editorial type, real Wikimedia Commons photographs). The APK
-> below is the actual application.
-
-## Download
-
-**[ArtistWalls 1.0.0 — signed APK](https://github.com/technicalnihilist-lgtm/ArtistWalls/releases/latest)**
-
-`com.artistwalls.app` · versionName 1.0.0 · minSdk 24 (Android 7.0) · targetSdk 35 · 8.8 MB
-
----
-
 ## 1. What it does
 
 | Area | Behaviour |
