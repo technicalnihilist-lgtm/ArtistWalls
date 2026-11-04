@@ -37,6 +37,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.artistwalls.app.di.AppContainer
 import com.artistwalls.app.di.LocalAppContainer
+import com.artistwalls.app.di.LocalFxSettings
+import com.artistwalls.app.ui.components.fxEnterTransition
+import com.artistwalls.app.ui.components.fxExitTransition
+import com.artistwalls.app.ui.screens.settings.SettingsScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.artistwalls.app.ui.components.glass
 import com.artistwalls.app.ui.screens.artist.ArtistDetailScreen
 import com.artistwalls.app.ui.screens.category.CategoryScreen
@@ -53,6 +58,7 @@ object Routes {
     const val SEARCH = "search"
     const val LIBRARY = "library"
     const val CREDITS = "credits"
+    const val SETTINGS = "settings"
 
     const val ARTIST = "artist/{slug}"
     const val CATEGORY = "category/{id}"
@@ -74,7 +80,11 @@ private val bottomItems = listOf(
 
 @Composable
 fun ArtistWallsRoot(container: AppContainer) {
-    CompositionLocalProvider(LocalAppContainer provides container) {
+    val fx by container.fx.settings.collectAsStateWithLifecycle()
+    CompositionLocalProvider(
+        LocalAppContainer provides container,
+        LocalFxSettings provides fx
+    ) {
         val navController = rememberNavController()
         val backStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = backStackEntry?.destination?.route
@@ -84,7 +94,11 @@ fun ArtistWallsRoot(container: AppContainer) {
             NavHost(
                 navController = navController,
                 startDestination = Routes.HOME,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                enterTransition = { fxEnterTransition(fx) },
+                exitTransition = { fxExitTransition(fx) },
+                popEnterTransition = { fxEnterTransition(fx) },
+                popExitTransition = { fxExitTransition(fx) }
             ) {
                 composable(Routes.HOME) {
                     HomeScreen(
@@ -92,7 +106,8 @@ fun ArtistWallsRoot(container: AppContainer) {
                         onOpenWallpaper = { navController.navigate(Routes.wallpaper(it)) },
                         onOpenCategory = { navController.navigate(Routes.category(it)) },
                         onOpenSearch = { navController.navigate(Routes.SEARCH) },
-                        onOpenCredits = { navController.navigate(Routes.CREDITS) }
+                        onOpenCredits = { navController.navigate(Routes.CREDITS) },
+                        onOpenSettings = { navController.navigate(Routes.SETTINGS) }
                     )
                 }
                 composable(Routes.SEARCH) {
@@ -107,6 +122,9 @@ fun ArtistWallsRoot(container: AppContainer) {
                         onOpenWallpaper = { navController.navigate(Routes.wallpaper(it)) },
                         onOpenSearch = { navController.navigate(Routes.SEARCH) }
                     )
+                }
+                composable(Routes.SETTINGS) {
+                    SettingsScreen(onBack = { navController.popBackStack() })
                 }
                 composable(Routes.CREDITS) {
                     CreditsScreen(
