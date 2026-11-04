@@ -18,10 +18,10 @@ compileSdk 35 · minSdk 24 · targetSdk 35
 
 ## Download
 
-**[ArtistWalls 1.0.5 — signed APK](https://github.com/technicalnihilist-lgtm/ArtistWalls/releases/latest)**
+**[ArtistWalls 1.0.6 — signed APK](https://github.com/technicalnihilist-lgtm/ArtistWalls/releases/latest)**
 
-`com.artistwalls.app` · versionCode 6 · versionName 1.0.5 · minSdk 24 (Android 7.0) · targetSdk 35 · 8.8 MB
-SHA-256 `781e7c0de1fa3da5378895512f21f7ea85f42d98bfa6c062e9f52d44307da2ac`
+`com.artistwalls.app` · versionCode 7 · versionName 1.0.6 · minSdk 24 (Android 7.0) · targetSdk 35 · 8.8 MB
+SHA-256 `836bd01b60bd885e5311ad5c0641078957d712af1560c732ce74f032b3e46f9d`
 
 Installs straight over 1.0.1–1.0.3 — same signing certificate.
 
