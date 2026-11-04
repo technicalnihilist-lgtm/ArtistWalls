@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -60,7 +61,8 @@ fun HomeScreen(
     onOpenWallpaper: (String) -> Unit,
     onOpenCategory: (String) -> Unit,
     onOpenSearch: () -> Unit,
-    onOpenCredits: () -> Unit
+    onOpenCredits: () -> Unit,
+    onOpenSettings: () -> Unit
 ) {
     val container = LocalAppContainer.current
     val viewModel: HomeViewModel = viewModel(
@@ -85,7 +87,8 @@ fun HomeScreen(
             item {
                 HomeHeader(
                     onOpenCredits = onOpenCredits,
-                    onOpenSearch = onOpenSearch
+                    onOpenSearch = onOpenSearch,
+                    onOpenSettings = onOpenSettings
                 )
             }
 
@@ -298,7 +301,11 @@ private fun androidx.compose.foundation.lazy.LazyListScope.wallpaperGrid(
 }
 
 @Composable
-private fun HomeHeader(onOpenCredits: () -> Unit, onOpenSearch: () -> Unit) {
+private fun HomeHeader(
+    onOpenCredits: () -> Unit,
+    onOpenSearch: () -> Unit,
+    onOpenSettings: () -> Unit
+) {
     Column(modifier = Modifier.statusBarsPadding()) {
         Row(
             modifier = Modifier
@@ -308,6 +315,18 @@ private fun HomeHeader(onOpenCredits: () -> Unit, onOpenSearch: () -> Unit) {
         ) {
             ArtistWallsWordmark()
             Spacer(Modifier.weight(1f))
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable(onClick = onOpenSettings)
+                    .padding(10.dp)
+            ) {
+                Icon(
+                    Icons.Rounded.Settings,
+                    contentDescription = "Visual effects settings",
+                    tint = TextSecondary
+                )
+            }
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
