@@ -5,6 +5,8 @@ import com.artistwalls.app.data.model.ImageQuality
 import com.artistwalls.app.data.model.LicenseInfo
 import com.artistwalls.app.data.model.Wallpaper
 import com.artistwalls.app.util.HtmlText
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
 
 /**
  * Turns a raw Commons page into a [Wallpaper] — and is the place where licensing
@@ -27,7 +29,9 @@ object CommonsMapper {
         if (info.mediatype != null && info.mediatype != "BITMAP") return null
 
         val em = info.extmetadata.orEmpty()
-        fun meta(key: String): String? = em[key]?.value
+        // Never assume a type: strings, numbers and booleans all turn up in extmetadata.
+        fun meta(key: String): String? =
+            (em[key]?.value as? JsonPrimitive)?.contentOrNull
 
         val licenseName = HtmlText.clean(meta("LicenseShortName"))
         val licenseUrl = meta("LicenseUrl").orEmpty()
