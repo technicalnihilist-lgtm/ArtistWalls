@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
+import com.artistwalls.app.data.model.FxSettings
+import kotlinx.coroutines.flow.combine
 import kotlinx.serialization.json.Json
 
 private val Context.dataStore by preferencesDataStore(name = "artistwalls_prefs")
@@ -22,6 +24,10 @@ class PreferencesStore(
 
     private val RECENT_SEARCHES = stringPreferencesKey("recent_searches")
     private val SHOW_LOW_RES = booleanPreferencesKey("show_low_res")
+    private val FX_GLASS = booleanPreferencesKey("fx_glass")
+    private val FX_DEPTH = booleanPreferencesKey("fx_depth")
+    private val FX_BOUNCE = booleanPreferencesKey("fx_bounce")
+    private val FX_MAC = booleanPreferencesKey("fx_mac")
 
     val recentSearches: Flow<List<String>> = context.dataStore.data.map { prefs ->
         decode(prefs[RECENT_SEARCHES])
@@ -29,6 +35,25 @@ class PreferencesStore(
 
     val showLowResolution: Flow<Boolean> = context.dataStore.data.map { prefs ->
         prefs[SHOW_LOW_RES] ?: true
+    }
+
+    /** The four visual-effect switches; every one defaults to on. */
+    val fxSettings: Flow<FxSettings> = context.dataStore.data.map { prefs ->
+        FxSettings(
+            glass = prefs[FX_GLASS] ?: true,
+            depth = prefs[FX_DEPTH] ?: true,
+            bounce = prefs[FX_BOUNCE] ?: true,
+            mac = prefs[FX_MAC] ?: true
+        )
+    }
+
+    suspend fun saveFx(settings: FxSettings) {
+        context.dataStore.edit { prefs ->
+            prefs[FX_GLASS] = settings.glass
+            prefs[FX_DEPTH] = settings.depth
+            prefs[FX_BOUNCE] = settings.bounce
+            prefs[FX_MAC] = settings.mac
+        }
     }
 
     suspend fun addSearch(query: String) {
