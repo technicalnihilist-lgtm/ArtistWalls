@@ -38,14 +38,18 @@ fun Modifier.plainGlass(
  * "Liquid glass": a diagonal gloss across the surface plus a bright, glowing edge —
  * the closest Compose can get to iOS-style glass without sampling the backdrop.
  */
-fun Modifier.liquidGlass(shape: Shape = RoundedCornerShape(20.dp)): Modifier = this
+fun Modifier.liquidGlass(
+    shape: Shape = RoundedCornerShape(20.dp),
+    tint: Float = 1f,
+    rim: Float = 1f
+): Modifier = this
     .clip(shape)
     .background(
         Brush.linearGradient(
             listOf(
-                Color.White.copy(alpha = 0.185f),
-                Color.White.copy(alpha = 0.055f),
-                Color.White.copy(alpha = 0.105f)
+                Color.White.copy(alpha = (0.185f * tint).coerceIn(0f, 1f)),
+                Color.White.copy(alpha = (0.055f * tint).coerceIn(0f, 1f)),
+                Color.White.copy(alpha = (0.105f * tint).coerceIn(0f, 1f))
             )
         ),
         shape = shape
@@ -54,9 +58,9 @@ fun Modifier.liquidGlass(shape: Shape = RoundedCornerShape(20.dp)): Modifier = t
         width = 1.dp,
         brush = Brush.linearGradient(
             listOf(
-                Color.White.copy(alpha = 0.58f),
-                Color.White.copy(alpha = 0.13f),
-                Color.White.copy(alpha = 0.34f)
+                Color.White.copy(alpha = (0.58f * rim).coerceIn(0f, 1f)),
+                Color.White.copy(alpha = (0.13f * rim).coerceIn(0f, 1f)),
+                Color.White.copy(alpha = (0.34f * rim).coerceIn(0f, 1f))
             )
         ),
         shape = shape
@@ -73,10 +77,13 @@ fun Modifier.glass(
     fill: Color = GlassFill,
     border: Color = GlassBorder,
     borderWidth: Dp = 1.dp
-): Modifier = if (LocalFxSettings.current.glass) {
-    liquidGlass(shape)
-} else {
-    plainGlass(shape, fill, border, borderWidth)
+): Modifier {
+    val fx = LocalFxSettings.current
+    return if (fx.glass) {
+        liquidGlass(shape, tint = fx.values.glassTint, rim = fx.values.glassRim)
+    } else {
+        plainGlass(shape, fill, border, borderWidth)
+    }
 }
 
 /** A floating glass panel used for headers, credit blocks and action bars. */
