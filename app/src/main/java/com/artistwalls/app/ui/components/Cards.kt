@@ -46,6 +46,7 @@ import com.artistwalls.app.data.model.ImageQuality
 import com.artistwalls.app.data.model.Wallpaper
 import com.artistwalls.app.data.model.WallpaperCategory
 import com.artistwalls.app.di.LocalAppContainer
+import com.artistwalls.app.di.LocalFxSettings
 import com.artistwalls.app.ui.theme.Gold
 import com.artistwalls.app.ui.theme.GoldLight
 import com.artistwalls.app.ui.theme.TextPrimary
@@ -127,10 +128,12 @@ fun FeaturedArtistCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val fx = LocalFxSettings.current
     Box(
         modifier = modifier
             .width(168.dp)
             .aspectRatio(0.78f)
+            .depthTilt(enabled = fx.depth, maxDegrees = 7f)
             .clip(RoundedCornerShape(22.dp))
             .clickable(onClick = onClick)
     ) {
@@ -172,9 +175,11 @@ fun WallpaperTile(
     modifier: Modifier = Modifier,
     isFavorite: Boolean = false
 ) {
+    val fx = LocalFxSettings.current
     Box(
         modifier = modifier
             .aspectRatio(0.68f)
+            .depthTilt(enabled = fx.depth)
             .clip(RoundedCornerShape(18.dp))
             .clickable(onClick = onClick)
     ) {
@@ -233,10 +238,12 @@ fun DailyHeroCard(
     onSet: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val fx = LocalFxSettings.current
     Box(
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(1.32f)
+            .depthTilt(enabled = fx.depth, maxDegrees = 5f)
             .clip(RoundedCornerShape(26.dp))
             .clickable(onClick = onOpen)
     ) {
@@ -301,9 +308,11 @@ fun CategoryCard(
     modifier: Modifier = Modifier,
     countLabel: String? = null
 ) {
+    val fx = LocalFxSettings.current
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .depthTilt(enabled = fx.depth, maxDegrees = 4f)
             .glass(RoundedCornerShape(18.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 16.dp),
