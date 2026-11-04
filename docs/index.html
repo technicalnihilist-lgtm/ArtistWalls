@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>ArtistWalls — premium music artist wallpapers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#000; --surface:#07070a; --raised:#101014;
+  --glass:rgba(255,255,255,.078); --glass-strong:rgba(255,255,255,.115);
+  --border:rgba(255,255,255,.14); --border-soft:rgba(255,255,255,.07);
+  --gold:#C9A227; --gold-light:#E8D9A0; --gold-deep:#8C6D1F; --silver:#B9C0C9;
+  --text:#F4F4F6; --text-2:#9C9CA6; --text-3:#6A6A74;
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --sans:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --r-sm:10px; --r-md:16px; --r-lg:22px; --r-xl:26px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:#000}
+body{
+  background:var(--black); color:var(--text); font-family:var(--sans);
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  min-height:100dvh; display:flex; justify-content:center;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+::selection{background:rgba(201,162,39,.3)}
+
+/* ---------- phone shell: full-bleed on mobile, framed on desktop ---------- */
+#app{
+  position:relative; width:100%; max-width:430px; min-height:100dvh;
+  background:var(--black); overflow-x:hidden;
+  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 40px 120px rgba(0,0,0,.9);
+}
+@media(min-width:520px){
+  body{padding:28px 0;align-items:flex-start}
+  #app{min-height:calc(100dvh - 56px);border-radius:34px;overflow:hidden}
+}
+.screen{display:none;padding-bottom:calc(96px + var(--safe-b))}
+.screen.active{display:block;animation:screenIn .32s cubic-bezier(.2,.7,.3,1)}
+@keyframes screenIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- primitives ---------- */
+.glass{
+  background:linear-gradient(180deg,var(--glass-strong),var(--glass));
+  border:1px solid var(--border); border-radius:var(--r-lg);
+  backdrop-filter:blur(18px) saturate(120%); -webkit-backdrop-filter:blur(18px) saturate(120%);
+}
+.serif{font-family:var(--serif);font-weight:400;letter-spacing:-.01em}
+.display{font-family:var(--serif);font-size:42px;line-height:1.04;letter-spacing:-.02em}
+.h1{font-family:var(--serif);font-size:34px;line-height:1.1;letter-spacing:-.015em}
+.h2{font-family:var(--serif);font-size:25px;line-height:1.15}
+.h3{font-family:var(--serif);font-size:21px;line-height:1.2}
+.sub{font-size:12.5px;color:var(--text-2);line-height:1.45}
+.tiny{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
+.eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-light)}
+.pad{padding:0 20px}
+.stack{display:flex;flex-direction:column}
+.row{display:flex;align-items:center}
+.spacer{flex:1}
+.gold{color:var(--gold)}
+.dim{color:var(--text-2)}
+
+.btn-gold{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:linear-gradient(100deg,var(--gold-light),var(--gold));
+  color:#1A1400;font-weight:600;font-size:13.5px;letter-spacing:.01em;
+  padding:13px 20px;border-radius:14px;border:0;
+  transition:transform .15s ease,filter .15s ease;
+}
+.btn-gold:hover{filter:brightness(1.06)} .btn-gold:active{transform:scale(.98)}
+.btn-glass{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:rgba(255,255,255,.09);border:1px solid var(--border);
+  color:var(--text);font-weight:500;font-size:13.5px;padding:13px 18px;border-radius:14px;
+  transition:background .15s ease,transform .15s ease;
+}
+.btn-glass:hover{background:rgba(255,255,255,.14)} .btn-glass:active{transform:scale(.98)}
+.icon-btn{
+  width:40px;height:40px;border-radius:999px;display:grid;place-items:center;
+  background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);color:#fff;
+  backdrop-filter:blur(10px);
+}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;
+  font-size:12.5px;color:var(--text-2);background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);white-space:nowrap;transition:.15s;
+}
+.chip.on{color:var(--gold-light);background:rgba(201,162,39,.16);border-color:rgba(201,162,39,.65)}
+.badge{
+  padding:3px 7px;border-radius:6px;font-size:9px;letter-spacing:.12em;
+  color:var(--gold-light);background:rgba(0,0,0,.6);border:1px solid rgba(232,217,160,.5);
+}
+.badge.low{color:var(--text-3);border-color:rgba(255,255,255,.28)}
+.lic-chip{
+  display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;
+  font-size:9.5px;letter-spacing:.1em;color:var(--gold-light);
+  background:rgba(201,162,39,.12);border:1px solid rgba(201,162,39,.45);
+}
+.divider{height:1px;background:var(--border-soft);margin:4px 0}
+
+/* ---------- brand ---------- */
+.brand{display:flex;align-items:center;gap:11px}
+.mark{width:31px;height:31px;border:1.6px solid var(--gold);border-radius:999px;
+  display:flex;align-items:center;justify-content:center;gap:2px;flex:0 0 auto}
+.mark i{display:block;width:2.3px;background:var(--gold-light);border-radius:2px}
+.brand-name{font-family:var(--serif);font-size:23px;letter-spacing:-.01em}
+.brand-name b{font-weight:400;color:var(--gold-light)}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;padding:calc(14px + env(safe-area-inset-top,0px)) 20px 12px;
+  background:linear-gradient(180deg,rgba(0,0,0,.92),rgba(0,0,0,.55) 70%,transparent);
+  backdrop-filter:blur(14px);
+}
+.topbar.plain{position:static;background:none;backdrop-filter:none;padding-top:calc(20px + env(safe-area-inset-top,0px))}
+
+/* ---------- search bar ---------- */
+.searchbar{
+  display:flex;align-items:center;gap:11px;padding:14px 16px;border-radius:var(--r-md);
+  background:linear-gradient(180deg,var(--glass-strong),var(--glass));
+  border:1px solid var(--border);cursor:text;
+}
+.searchbar input{
+  flex:1;background:none;border:0;outline:0;color:var(--text);font-size:13.5px;font-family:var(--sans);
+}
+.searchbar input::placeholder{color:var(--text-3)}
+.searchbar .x{color:var(--text-2);font-size:15px;padding:2px 4px}
+
+/* ---------- sections & rails ---------- */
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:26px 20px 12px}
+.section-head .sub{margin-top:3px}
+.section-link{font-size:10px;letter-spacing:.14em;color:var(--gold);text-transform:uppercase;white-space:nowrap}
+.rail{display:flex;gap:12px;overflow-x:auto;padding:2px 20px 4px;scroll-snap-type:x proximity;
+  scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.rail>*{scroll-snap-align:start;flex:0 0 auto}
+
+/* featured card */
+.card-feature{
+  position:relative;width:172px;aspect-ratio:.78;border-radius:var(--r-lg);overflow:hidden;
+  background:linear-gradient(160deg,#14141a,#07070a);border:1px solid var(--border-soft);
+  transition:transform .2s ease;
+}
+.card-feature:hover{transform:translateY(-3px)}
+.card-feature img{width:100%;height:100%;object-fit:cover}
+.card-feature .cap{position:absolute;inset:auto 0 0 0;padding:13px;z-index:2}
+.card-feature .cap .nm{font-family:var(--serif);font-size:19px;line-height:1.15}
+.card-feature .cap .tg{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-light);margin-top:4px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* artist circle */
+.card-artist{width:106px;text-align:center}
+.card-artist .ph{
+  width:88px;height:88px;border-radius:999px;margin:0 auto;overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);background:linear-gradient(160deg,#14141a,#07070a);
+  display:grid;place-items:center;font-family:var(--serif);font-size:26px;color:rgba(201,162,39,.8);
+}
+.card-artist .ph img{width:100%;height:100%;object-fit:cover}
+.card-artist .nm{font-size:12.5px;margin-top:9px;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-artist .grp{font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--text-3);margin-top:3px}
+
+/* wallpaper grid */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px}
+.tile{
+  position:relative;aspect-ratio:.68;border-radius:18px;overflow:hidden;
+  background:linear-gradient(160deg,#14141a,#07070a);border:1px solid var(--border-soft);
+  transition:transform .2s ease;
+}
+.tile:hover{transform:translateY(-2px)}
+.tile img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s ease}
+.tile img.loaded{opacity:1}
+.tile .scrim{position:absolute;inset:0;background:linear-gradient(180deg,transparent 42%,rgba(0,0,0,.55) 72%,rgba(0,0,0,.93))}
+.tile .top{position:absolute;top:8px;right:8px;left:8px;display:flex;justify-content:flex-end;gap:5px;z-index:2}
+.tile .fav{position:absolute;top:9px;left:9px;color:var(--gold);font-size:12px;z-index:2}
+.tile .meta{position:absolute;inset:auto 10px 9px;z-index:2}
+.tile .nm{font-size:12.5px;font-weight:500;line-height:1.25;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile .res{font-size:9px;letter-spacing:.1em;color:var(--text-2);margin-top:2px}
+
+/* category row */
+.cat-row{display:flex;align-items:center;gap:12px;padding:15px 16px;border-radius:18px;
+  background:linear-gradient(180deg,var(--glass-strong),var(--glass));border:1px solid var(--border);
+  margin-bottom:10px;transition:background .15s}
+.cat-row:hover{background:rgba(255,255,255,.09)}
+.cat-row .nm{font-size:13.5px;font-weight:500}
+.cat-row .bl{font-size:10.5px;color:var(--text-3);margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat-row .arw{color:var(--text-2);font-size:15px}
+
+/* ---------- hero (daily) ---------- */
+.hero{
+  position:relative;margin:4px 20px 0;aspect-ratio:1.28;border-radius:var(--r-xl);overflow:hidden;
+  border:1px solid var(--border-soft);background:linear-gradient(160deg,#14141a,#07070a);
+}
+.hero img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
+.hero img.loaded{opacity:1}
+.hero .scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.35) 45%,rgba(0,0,0,.82) 78%,rgba(0,0,0,.96))}
+.hero .body{position:absolute;inset:auto 18px 16px;z-index:2}
+.hero .dot{width:5px;height:5px;border-radius:999px;background:var(--gold);display:inline-block;margin-right:6px;vertical-align:middle}
+.hero .nm{font-family:var(--serif);font-size:34px;line-height:1.06;margin-top:8px;letter-spacing:-.01em}
+.hero .meta{font-size:11px;color:var(--text-2);margin-top:5px}
+.hero .acts{display:flex;gap:10px;margin-top:14px}
+
+/* ---------- detail (wallpaper) ---------- */
+.wp-screen{position:relative;display:flex;flex-direction:column;min-height:100dvh;background:#000;
+  padding-bottom:calc(88px + var(--safe-b))}
+.wp-screen .full{position:fixed;inset:0;z-index:0;background:#05050a}
+@media(min-width:520px){.wp-screen .full{position:absolute;border-radius:34px;overflow:hidden}}
+.wp-screen .full img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
+.wp-screen .full img.loaded{opacity:1}
+.wp-screen .full .scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.72),rgba(0,0,0,.18) 35%,rgba(0,0,0,.72) 72%,rgba(0,0,0,.96))}
+.wp-top{position:relative;z-index:3;display:flex;gap:8px;padding:calc(16px + env(safe-area-inset-top,0px)) 14px 0}
+.wp-panel{
+  position:relative;z-index:3;margin:auto 12px 12px;padding:18px;border-radius:var(--r-xl);
+  max-height:58dvh;overflow-y:auto;overscroll-behavior:contain;
+  scrollbar-width:none;
+  background:linear-gradient(180deg,rgba(28,28,32,.86),rgba(12,12,14,.94));
+  border:1px solid var(--border);backdrop-filter:blur(26px) saturate(130%);
+  -webkit-backdrop-filter:blur(26px) saturate(130%);
+}
+.wp-panel::-webkit-scrollbar{display:none}
+.wp-panel .title{font-family:var(--serif);font-size:27px;line-height:1.1;margin-top:2px}
+.wp-panel .subtitle{font-size:11px;color:var(--text-2);margin-top:3px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meta-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:11px}
+.meta-row .res{font-size:9px;letter-spacing:.1em;color:var(--text-2)}
+.act-row{display:flex;gap:8px;margin-top:13px}
+.act-row>*{flex:1}
+.credit-toggle{display:flex;align-items:center;justify-content:space-between;
+  margin-top:15px;padding:6px 0;border-top:1px solid var(--border-soft)}
+.credit-body{margin-top:8px;font-size:11px}
+.credit-line{margin-top:7px}
+.credit-line .lb{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
+.credit-line .vl{color:var(--text-2);line-height:1.45;margin-top:2px}
+.link-row{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 0;color:var(--gold);font-size:12px}
+
+/* ---------- artist page ---------- */
+.artist-hero{position:relative;height:420px;overflow:hidden;background:linear-gradient(160deg,#14141a,#07070a)}
+.artist-hero img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
+.artist-hero img.loaded{opacity:1}
+.artist-hero .scrim{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.75),rgba(0,0,0,.2) 42%,rgba(0,0,0,.6) 72%,rgba(0,0,0,.97))}
+.artist-hero .back{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:14px;z-index:3}
+.artist-hero .body{position:absolute;inset:auto 20px 22px;z-index:2}
+.artist-hero .nm{font-family:var(--serif);font-size:44px;line-height:1.02;margin-top:6px;letter-spacing:-.02em}
+
+/* ---------- states ---------- */
+.state{padding:34px 24px;border-radius:var(--r-lg);text-align:center;
+  background:linear-gradient(180deg,var(--glass-strong),var(--glass));border:1px solid var(--border);
+  margin:0 20px}
+.state .t{font-family:var(--serif);font-size:22px;margin-bottom:8px}
+.state .m{font-size:12.5px;color:var(--text-2);line-height:1.55}
+.state .a{margin-top:16px;display:inline-flex}
+.spinner{width:26px;height:26px;border-radius:999px;border:2px solid rgba(255,255,255,.14);
+  border-top-color:var(--gold);animation:spin .8s linear infinite;margin:26px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.skel{background:rgba(255,255,255,.05);border-radius:18px;aspect-ratio:.68;
+  animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.toast{
+  position:fixed;left:50%;transform:translate(-50%,20px);bottom:calc(104px + var(--safe-b));
+  background:rgba(24,24,28,.96);border:1px solid var(--border);color:var(--text);
+  padding:11px 16px;border-radius:12px;font-size:12.5px;z-index:90;opacity:0;pointer-events:none;
+  transition:opacity .25s,transform .25s;backdrop-filter:blur(14px);max-width:86%;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- bottom nav ---------- */
+.nav{
+  position:fixed;bottom:calc(10px + var(--safe-b));left:50%;transform:translateX(-50%);
+  width:min(398px,calc(100% - 32px));z-index:60;display:flex;justify-content:space-around;
+  padding:9px 6px;border-radius:24px;
+  background:linear-gradient(180deg,rgba(30,30,34,.82),rgba(14,14,16,.9));
+  border:1px solid var(--border);backdrop-filter:blur(24px) saturate(140%);
+  -webkit-backdrop-filter:blur(24px) saturate(140%);
+  box-shadow:0 18px 40px rgba(0,0,0,.55);
+}
+.nav button{display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 12px;border-radius:14px;color:var(--text-3);font-size:9px;letter-spacing:.06em;
+  transition:color .15s}
+.nav button.on{color:var(--gold)}
+.nav svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- misc ---------- */
+.footnote{margin:26px 20px 0;padding:18px;border-radius:var(--r-lg);
+  background:linear-gradient(180deg,var(--glass-strong),var(--glass));border:1px solid var(--border)}
+.footnote p{font-size:11.5px;color:var(--text-2);line-height:1.6;margin-top:6px}
+.credit-item{display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--border-soft)}
+.credit-item:last-child{border-bottom:0}
+.credit-item .t{font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.credit-item .a{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2);margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:0 20px 12px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.rowgap{display:flex;flex-direction:column;gap:10px;padding:0 20px}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- screens injected here -->
+  <div id="view"></div>
+  <nav class="nav" id="nav">
+    <button data-go="#/home" data-tab="home">
+      <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></svg><span>Home</span></button>
+    <button data-go="#/search" data-tab="search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search</span></button>
+    <button data-go="#/library" data-tab="library">
+      <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.6-7 9-7 9Z"/></svg><span>Library</span></button>
+    <button data-go="#/credits" data-tab="credits">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r=".9" fill="currentColor" stroke="none"/></svg><span>Credits</span></button>
+  </nav>
+  <div class="toast" id="toast"></div>
+</div>
+<script>
+/* =====================================================================
+   ArtistWalls — web edition
+   Same data path as the Android app: live Wikimedia Commons discovery,
+   the same licence gate, the same credits. No image list is stored here.
+   ===================================================================== */
+const API = 'https://commons.wikimedia.org/w/api.php';
+const PREVIEW_WIDTH = 1200;
+const MIN_WALLPAPER_WIDTH = 1000;
+const CACHE_TTL = 5 * 60 * 1000;
+
+const STOP = new Set(['the','and','singer','artists','artist']);
+const tokensOf = name => name.toLowerCase()
+  .replace(/[()éóí]/g, c => ({ '(':' ', ')':' ', 'é':'e', 'ó':'o', 'í':'i' }[c] || ' '))
+  .split(/[\s,.\-']+/).filter(t => t.length > 2 && !STOP.has(t));
+
+const A = (slug, name, group, wiki, tagline, extra = [], extraTokens = []) => ({
+  slug, name, group, wiki, tagline,
+  candidates: [`${name} filetype:bitmap`, ...extra,
+               `incategory:"${name}" filetype:bitmap`, `${name} singer filetype:bitmap`],
+  tokens: [...new Set([...tokensOf(name), ...extraTokens])]
+});
+
+const INDIAN = [
+  A('arijit-singh','Arijit Singh','Indian Singers','Arijit_Singh','Playback voice of a generation'),
+  A('shreya-ghoshal','Shreya Ghoshal','Indian Singers','Shreya_Ghoshal','National Award winning playback singer'),
+  A('sonu-nigam','Sonu Nigam','Indian Singers','Sonu_Nigam','The golden voice of the 2000s'),
+  A('armaan-malik','Armaan Malik','Indian Singers','Armaan_Malik','Contemporary pop and playback'),
+  A('jubin-nautiyal','Jubin Nautiyal','Indian Singers','Jubin_Nautiyal','Indie-pop crossover voice'),
+  A('atif-aslam','Atif Aslam','Indian Singers','Atif_Aslam','Subcontinental rock and playback'),
+  A('kk','KK','Indian Singers','KK_(singer)','Krishnakumar Kunnath · evergreen playback',
+    ['Krishnakumar Kunnath filetype:bitmap','KK singer playback filetype:bitmap'], ['kk','krishnakumar','kunnath']),
+  A('mohit-chauhan','Mohit Chauhan','Indian Singers','Mohit_Chauhan','Silk Route frontman turned playback legend'),
+  A('vishal-mishra','Vishal Mishra','Indian Singers','Vishal_Mishra_(composer)','Composer and singer'),
+  A('neha-kakkar','Neha Kakkar','Indian Singers','Neha_Kakkar','Pop and playback powerhouse'),
+  A('sunidhi-chauhan','Sunidhi Chauhan','Indian Singers','Sunidhi_Chauhan','High-energy playback icon'),
+  A('kumar-sanu','Kumar Sanu','Indian Singers','Kumar_Sanu','The melody king of the 90s'),
+  A('udit-narayan','Udit Narayan','Indian Singers','Udit_Narayan','Voice of a million film songs'),
+  A('alka-yagnik','Alka Yagnik','Indian Singers','Alka_Yagnik','Record-breaking playback artist'),
+  A('asha-bhosle','Asha Bhosle','Indian Singers','Asha_Bhosle','Dadasaheb Phalke awardee'),
+  A('lata-mangeshkar','Lata Mangeshkar','Indian Singers','Lata_Mangeshkar','The Nightingale of India')
+];
+const INTERNATIONAL = [
+  A('michael-jackson','Michael Jackson','International Artists','Michael_Jackson','King of Pop'),
+  A('taylor-swift','Taylor Swift','International Artists','Taylor_Swift','Songwriter and pop phenomenon'),
+  A('ed-sheeran','Ed Sheeran','International Artists','Ed_Sheeran','Acoustic pop and stadium tours'),
+  A('justin-bieber','Justin Bieber','International Artists','Justin_Bieber','Global pop'),
+  A('adele','Adele','International Artists','Adele','Soulful British vocalist'),
+  A('bruno-mars','Bruno Mars','International Artists','Bruno_Mars','Funk, soul and showmanship'),
+  A('the-weeknd','The Weeknd','International Artists','The_Weeknd','Alt-R&B and synth pop'),
+  A('billie-eilish','Billie Eilish','International Artists','Billie_Eilish','Whisper-pop auteur'),
+  A('eminem','Eminem','International Artists','Eminem','Rap icon'),
+  A('rihanna','Rihanna','International Artists','Rihanna','Pop and R&B superstar'),
+  A('beyonce','Beyoncé','International Artists','Beyonc%C3%A9','Vocalist, performer, producer',[],['beyonce','beyoncé','knowles']),
+  A('freddie-mercury','Freddie Mercury','International Artists','Freddie_Mercury',"Queen's frontman"),
+  A('elvis-presley','Elvis Presley','International Artists','Elvis_Presley','The King of Rock and Roll'),
+  A('john-lennon','John Lennon','International Artists','John_Lennon','Beatle, songwriter, activist'),
+  A('madonna','Madonna','International Artists','Madonna','Queen of Pop')
+];
+const CATEGORIES = [
+  {id:'bollywood-singers',name:'Bollywood Singers',blurb:'Playback voices of Hindi cinema',
+   candidates:['Bollywood playback singer filetype:bitmap','incategory:"Bollywood singers" filetype:bitmap']},
+  {id:'classical-musicians',name:'Classical Musicians',blurb:'Hindustani, Carnatic and western classical',
+   candidates:['incategory:"Classical musicians" filetype:bitmap','classical musician concert filetype:bitmap']},
+  {id:'music-composers',name:'Music Composers',blurb:'The people behind the score',
+   candidates:['incategory:"Composers" filetype:bitmap','film score composer filetype:bitmap']},
+  {id:'guitarists',name:'Guitarists',blurb:'Six strings, endless tone',
+   candidates:['incategory:"Guitarists" filetype:bitmap','guitarist performing live filetype:bitmap']},
+  {id:'pianists',name:'Pianists',blurb:'Keys and quiet intensity',
+   candidates:['incategory:"Pianists" filetype:bitmap','pianist concert grand piano filetype:bitmap']},
+  {id:'drummers',name:'Drummers',blurb:'The engine room of every band',
+   candidates:['incategory:"Drummers" filetype:bitmap','drummer performing live filetype:bitmap']},
+  {id:'rock-bands',name:'Rock Bands',blurb:'Loud, live and legendary',
+   candidates:['incategory:"Rock music groups" filetype:bitmap','incategory:"Rock musicians" filetype:bitmap']},
+  {id:'pop-artists',name:'Pop Artists',blurb:'Chart-topping performers',
+   candidates:['incategory:"Pop musicians" filetype:bitmap','pop singer stage filetype:bitmap']},
+  {id:'legendary-artists',name:'Legendary Artists',blurb:'Careers that defined music',
+   candidates:['legendary musician portrait filetype:bitmap','vintage singer portrait filetype:bitmap']},
+  {id:'female-artists',name:'Female Artists',blurb:'Voices that lead',
+   candidates:['incategory:"Female vocalists" filetype:bitmap','female singer portrait filetype:bitmap']},
+  {id:'male-artists',name:'Male Artists',blurb:'Voices that carry',
+   candidates:['incategory:"Male vocalists" filetype:bitmap','male singer portrait filetype:bitmap']},
+  {id:'live-performers',name:'Live Performers',blurb:'Stage lights and sweat',
+   candidates:['incategory:"Live performances" filetype:bitmap','live concert singer stage filetype:bitmap']}
+];
+const ALL_ARTISTS = [...INDIAN, ...INTERNATIONAL];
+const bySlug = s => ALL_ARTISTS.find(a => a.slug === s) || null;
+const byName = n => ALL_ARTISTS.find(a => a.name.toLowerCase() === (n||'').toLowerCase()) || null;
+const byCategory = id => CATEGORIES.find(c => c.id === id) || null;
+const relatedTo = (artist, n = 8) => {
+  const pool = artist.group === 'Indian Singers' ? INDIAN : INTERNATIONAL;
+  const i = Math.max(0, pool.findIndex(a => a.slug === artist.slug));
+  return [...pool.slice(i+1), ...pool.slice(0,i).reverse()].slice(0, n);
+};
+
+/* ---------------------------- licence gate ---------------------------- */
+const REJECT = ['non-free','nonfree','fair use','fairuse','all rights reserved','copyright',
+                'no license','unknown','gfdl','permission'];
+const NC = ['-nc',' nc ','nc-','noncommercial','non-commercial'];
+const ND = ['-nd',' nd ','nd-','noderiv','no derivative'];
+function licenceAccepted(name){
+  const n = (name||'').trim().toLowerCase();
+  if(!n) return false;
+  if(REJECT.some(m => n.includes(m))) return false;
+  if(NC.some(m => n.includes(m)) || ND.some(m => n.includes(m))) return false;
+  if(n.startsWith('public domain') || n === 'pd' || n.startsWith('pd-') ||
+     n === 'public domain mark 1.0' || n === 'no restrictions') return true;
+  if(n.startsWith('cc0') || n.startsWith('cc-0') || n.startsWith('cc zero')) return true;
+  return n.startsWith('cc by') || n.startsWith('cc-by') || n.startsWith('attribution');
+}
+const isShareAlike = n => /cc by-sa|share/i.test(n||'');
+const needsAttribution = n => {
+  const x = (n||'').toLowerCase();
+  if(x.startsWith('public domain') || x === 'pd' || x.startsWith('pd-')) return false;
+  return !(x.startsWith('cc0') || x.startsWith('cc-0'));
+};
+const modificationNote = sa => sa
+  ? 'Unmodified. Original file shown as published on Wikimedia Commons; the smaller preview is scaled by Wikimedia’s thumbnail servers, not by ArtistWalls. Shared under the same licence (ShareAlike).'
+  : 'Unmodified. Original file shown as published on Wikimedia Commons; the smaller preview is scaled by Wikimedia’s thumbnail servers, not by ArtistWalls.';
+
+/* ------------------------------ text utils ---------------------------- */
+const stripHtml = raw => (raw||'')
+  .replace(/<[^>]*>/g,' ')
+  .replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&quot;/g,'"')
+  .replace(/&#0?39;/g,"'").replace(/&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+  .replace(/&ndash;/g,'–').replace(/&mdash;/g,'—')
+  .replace(/[\s\u00A0]+/g,' ').trim();
+const truncate = (raw,max) => {
+  const s = stripHtml(raw);
+  if(s.length <= max) return s;
+  const cut = s.slice(0,max);
+  const sp = cut.lastIndexOf(' ');
+  return (sp > max*0.6 ? cut.slice(0,sp) : cut).replace(/[\s,;.]+$/,'') + '…';
+};
+const esc = s => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ------------------------------- network ------------------------------ */
+/* Wikimedia throttles bursts (HTTP 429), so every API call goes through a small
+   queue: at most two in flight, a short gap between them, and backoff that
+   honours Retry-After when we do get throttled. */
+const MAX_CONCURRENT = 2;
+let activeCalls = 0;
+const callQueue = [];
+function pumpQueue(){
+  if(activeCalls >= MAX_CONCURRENT || !callQueue.length) return;
+  const job = callQueue.shift();
+  activeCalls++;
+  job.run().then(job.resolve, job.reject).finally(() => {
+    activeCalls--;
+    setTimeout(pumpQueue, 140);
+  });
+}
+const schedule = run => new Promise((resolve, reject) => {
+  callQueue.push({run, resolve, reject});
+  pumpQueue();
+});
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function apiCall(params, tries = 4){
+  const url = API + '?' + new URLSearchParams({...params, format:'json', formatversion:'2', origin:'*'});
+  let lastErr;
+  for(let i=0;i<tries;i++){
+    try{
+      return await schedule(async () => {
+        const res = await fetch(url, {headers:{'Accept':'application/json'}});
+        if(res.status === 429) throw Object.assign(new Error('HTTP 429'), {throttled:true, retryAfter:+res.headers.get('Retry-After')});
+        if(!res.ok) throw new Error('HTTP ' + res.status);
+        const json = await res.json();
+        if(json.error) throw new Error(json.error.info || json.error.code || 'API error');
+        return json;
+      });
+    }catch(e){
+      lastErr = e;
+      if(i < tries-1) await sleep(e.throttled ? Math.max(1200, (e.retryAfter||1)*1000) * (i+1) : 600*(i+1));
+    }
+  }
+  throw new Error('Wikimedia Commons is not reachable right now. ' + (lastErr ? '(' + lastErr.message + ')' : ''));
+}
+
+/* ------------------------------- mapping ------------------------------ */
+function mapPage(page, artistName){
+  const info = (page.imageinfo||[])[0];
+  if(!info) return null;
+  const mime = (info.mime||'').toLowerCase();
+  if(mime && !['image/jpeg','image/png','image/webp'].includes(mime)) return null;
+  if(info.mediatype && info.mediatype !== 'BITMAP') return null;
+
+  const em = info.extmetadata || {};
+  const meta = k => {
+    const v = em[k] && em[k].value;
+    if(v == null) return null;
+    if(typeof v === 'string') return v;
+    if(typeof v === 'number' || typeof v === 'boolean') return String(v);
+    return null;
+  };
+  const licence = stripHtml(meta('LicenseShortName'));
+  if(!licenceAccepted(licence)) return null;
+
+  const original = info.url; if(!original) return null;
+  const source = info.descriptionurl || info.descriptionshorturl; if(!source) return null;
+  const preview = info.thumburl || original;
+  const width = info.width||0, height = info.height||0;
+  if(!width || !height) return null;
+
+  const author = stripHtml(meta('Artist')) || stripHtml(meta('Credit')) ||
+                 stripHtml(meta('Attribution')) || 'Wikimedia Commons contributor';
+  const sa = isShareAlike(licence);
+  const title = page.title.replace(/_/g,' ');
+
+  return {
+    id: title, title,
+    displayTitle: title.replace(/^File:/,'').replace(/\.[^.]+$/,''),
+    artistName: artistName || '',
+    original, thumb: preview, preview,
+    width, height, mime: mime || 'image/jpeg',
+    description: truncate(meta('ImageDescription'), 600),
+    date: truncate(meta('DateTimeOriginal'), 80),
+    credit: {
+      author,
+      line: `${author} · ${licence} · via Wikimedia Commons`,
+      source,
+      licence,
+      licenceUrl: meta('LicenseUrl') || source,
+      usageTerms: stripHtml(meta('UsageTerms')),
+      shareAlike: sa,
+      attributionRequired: needsAttribution(licence),
+      modificationNote: modificationNote(sa)
+    },
+    quality: width >= MIN_WALLPAPER_WIDTH ? 'WALLPAPER' : 'PREVIEW_ONLY'
+  };
+}
+const isRelevant = (w, tokens) => !tokens.length ||
+  tokens.some(t => (w.title + ' ' + w.description).toLowerCase().includes(t));
+const galleryOrder = (a,b) =>
+  (b.height >= b.width) - (a.height >= a.width) || (b.width*b.height) - (a.width*a.height);
+
+/* -------------------------------- feeds ------------------------------- */
+const resolvedQueries = new Map();
+const pageCache = new Map();
+
+async function requestPage(query, offset, limit, artistName, tokens, sort){
+  const params = {
+    action:'query', generator:'search', gsrsearch:query, gsrnamespace:'6',
+    gsrlimit:String(limit), gsroffset:String(offset),
+    prop:'imageinfo', iiprop:'url|size|mime|extmetadata', iiurlwidth:String(PREVIEW_WIDTH)
+  };
+  if(sort) params.gsrsort = sort;
+  const json = await apiCall(params);
+  const pages = (json.query && json.query.pages) || [];
+  const mapped = pages.map(p => mapPage(p, artistName)).filter(Boolean);
+  const seen = new Set(); const deduped = [];
+  for(const w of mapped){ if(!seen.has(w.id)){ seen.add(w.id); deduped.push(w); } }
+  const relevant = deduped.filter(w => isRelevant(w, tokens));
+  const kept = relevant.length >= 3 ? relevant : deduped;
+  const next = json.continue && json.continue.gsroffset;
+  return {
+    items: kept.sort(galleryOrder),
+    nextOffset: next ?? offset + limit,
+    hasMore: !!next && next > offset,
+    raw: pages.length,
+    rejected: pages.length - deduped.length
+  };
+}
+
+async function feed({id, candidates, artistName='', tokens=[], offset=0, limit=24, sort=null, refresh=false}){
+  const key = `${id}|${offset}|${sort||''}`;
+  if(!refresh && offset === 0){
+    const hit = pageCache.get(key);
+    if(hit && Date.now() - hit.at < CACHE_TTL) return hit.page;
+  }
+  let page;
+  if(offset === 0){
+    page = {items:[], nextOffset:0, hasMore:false, raw:0, rejected:0};
+    for(const candidate of candidates){
+      const attempt = await requestPage(candidate, 0, limit, artistName, tokens, sort);
+      if(attempt.items.length){
+        resolvedQueries.set(id, candidate);
+        page = attempt; break;
+      }
+    }
+  } else {
+    const query = resolvedQueries.get(id) || candidates[0];
+    page = await requestPage(query, offset, limit, artistName, tokens, sort);
+  }
+  if(offset === 0) pageCache.set(key, {at:Date.now(), page});
+  return page;
+}
+
+const artistFeed = (artist, offset=0, limit=24, refresh=false) =>
+  feed({id:'artist:'+artist.slug, candidates:artist.candidates, artistName:artist.name,
+        tokens:artist.tokens, offset, limit, refresh});
+const categoryFeed = (cat, offset=0, limit=24, refresh=false) =>
+  feed({id:'category:'+cat.id, candidates:cat.candidates, offset, limit, refresh});
+const searchFeed = (q, offset=0, limit=24) =>
+  feed({id:'search:'+q.toLowerCase(), candidates:[`incategory:"${q}" filetype:bitmap`, `${q} filetype:bitmap`], offset, limit});
+const trendingFeed = (offset=0, limit=24) =>
+  feed({id:'trending', candidates:['singer concert portrait filetype:bitmap','incategory:"Live performances" filetype:bitmap','musician performing filetype:bitmap'], offset, limit, sort:'incoming_links_desc'});
+const recentFeed = (offset=0, limit=24, refresh=false) =>
+  feed({id:'recent', candidates:['incategory:"Musicians" filetype:bitmap','musician portrait filetype:bitmap','singer portrait filetype:bitmap'], offset, limit, sort:'create_timestamp_desc', refresh});
+
+async function wallpaperByTitle(title){
+  const t = title.startsWith('File:') ? title : 'File:' + title;
+  const json = await apiCall({action:'query', titles:t, prop:'imageinfo',
+    iiprop:'url|size|mime|extmetadata', iiurlwidth:String(PREVIEW_WIDTH)});
+  const page = ((json.query && json.query.pages)||[])[0];
+  if(!page) return null;
+  const w = mapPage(page, '');
+  if(!w) return null;
+  const match = ALL_ARTISTS.find(a => a.tokens.some(tk => w.title.toLowerCase().includes(tk)));
+  w.artistName = match ? match.name : '';
+  return w;
+}
+
+let dailyCache = null;
+async function dailyWallpaper(){
+  const now = new Date();
+  const dayKey = now.getFullYear()*1000 + Math.floor((now - new Date(now.getFullYear(),0,0))/86400000);
+  if(dailyCache && dailyCache.key === dayKey) return dailyCache.value;
+  for(let step=0; step<5; step++){
+    const artist = ALL_ARTISTS[(dayKey + step) % ALL_ARTISTS.length];
+    try{
+      const page = await artistFeed(artist, 0, 24);
+      const pick = page.items.find(w => w.quality === 'WALLPAPER') || page.items[0];
+      if(pick){ dailyCache = {key:dayKey, value:pick}; return pick; }
+    }catch(e){ /* try the next artist */ }
+  }
+  const fallback = (await trendingFeed(0,12).catch(()=>({items:[]}))).items[0] || null;
+  dailyCache = {key:dayKey, value:fallback};
+  return fallback;
+}
+
+/* ------------------------- artist lead thumbnails --------------------- */
+const leadCache = new Map();
+const leadInFlight = new Map();
+function artistLead(artist){
+  if(leadCache.has(artist.slug)) return Promise.resolve(leadCache.get(artist.slug));
+  if(leadInFlight.has(artist.slug)) return leadInFlight.get(artist.slug);
+  const job = artistFeed(artist, 0, 8).then(page => {
+    const pick = page.items.find(w => w.height >= w.width) || page.items[0];
+    const url = pick ? pick.thumb : null;
+    leadCache.set(artist.slug, url);
+    return url;
+  }).catch(() => null).finally(() => leadInFlight.delete(artist.slug));
+  leadInFlight.set(artist.slug, job);
+  return job;
+}
+
+/* ------------------------------ storage ------------------------------- */
+const LS = {
+  read(k, d){ try{ return JSON.parse(localStorage.getItem(k)) ?? d; }catch(e){ return d; } },
+  write(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+const Store = {
+  favourites(){ return LS.read('aw.favourites', []); },
+  isFavourite(id){ return this.favourites().some(w => w.id === id); },
+  toggleFavourite(w){
+    const list = this.favourites();
+    const i = list.findIndex(x => x.id === w.id);
+    if(i >= 0){ list.splice(i,1); LS.write('aw.favourites', list); return false; }
+    list.unshift({...w, savedAt: Date.now()});
+    LS.write('aw.favourites', list.slice(0, 300));
+    return true;
+  },
+  downloaded(){ return LS.read('aw.downloaded', []); },
+  markDownloaded(w){
+    const list = this.downloaded().filter(x => x.id !== w.id);
+    list.unshift({...w, savedAt: Date.now()});
+    LS.write('aw.downloaded', list.slice(0, 200));
+  },
+  isDownloaded(id){ return this.downloaded().some(w => w.id === id); },
+  recent(){ return LS.read('aw.recent', []); },
+  touchRecent(w){
+    const list = this.recent().filter(x => x.id !== w.id);
+    list.unshift({...w, viewedAt: Date.now()});
+    LS.write('aw.recent', list.slice(0, 60));
+  },
+  searches(){ return LS.read('aw.searches', []); },
+  addSearch(q){
+    const t = q.trim(); if(t.length < 2) return;
+    const list = [t, ...this.searches().filter(x => x.toLowerCase() !== t.toLowerCase())].slice(0,8);
+    LS.write('aw.searches', list);
+  },
+  clearSearches(){ LS.write('aw.searches', []); }
+};
+</script>
+<script>
+/* ============================== rendering ============================= */
+const view = document.getElementById('view');
+const toastEl = document.getElementById('toast');
+let toastTimer;
+function toast(msg){
+  toastEl.textContent = msg; toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2600);
+}
+const spinner = () => '<div class="spinner"></div>';
+const stateCard = (title, msg, actionLabel, actionAttr) => `
+  <div class="state">
+    <div class="t">${esc(title)}</div>
+    <div class="m">${msg}</div>
+    ${actionLabel ? `<button class="btn-gold a" ${actionAttr}>${esc(actionLabel)}</button>` : ''}
+  </div>`;
+
+const tileHTML = (w, opts = {}) => `
+  <button class="tile" data-open="${esc(w.id)}" aria-label="${esc(w.artistName || w.displayTitle)}">
+    <img loading="lazy" src="${esc(w.thumb)}" alt="${esc(w.displayTitle)}" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+    <div class="scrim"></div>
+    <div class="top">
+      ${Store.isFavourite(w.id) ? '<span class="fav">♥</span>' : ''}
+      <span class="badge ${w.quality === 'PREVIEW_ONLY' ? 'low' : ''}">${w.quality === 'WALLPAPER' ? 'HD' : 'LOW-RES'}</span>
+    </div>
+    <div class="meta">
+      <div class="nm">${esc(w.artistName || w.displayTitle)}</div>
+      <div class="res">${w.width} × ${w.height}</div>
+    </div>
+  </button>`;
+
+const artistCardHTML = (a) => `
+  <button class="card-artist" data-artist="${esc(a.slug)}">
+    <div class="ph" data-lead="${esc(a.slug)}">${esc(a.name[0])}</div>
+    <div class="nm">${esc(a.name)}</div>
+    <div class="grp">${esc(a.group)}</div>
+  </button>`;
+
+const featureCardHTML = (a) => `
+  <button class="card-feature" data-artist="${esc(a.slug)}">
+    <div class="ph" data-lead="${esc(a.slug)}" style="width:100%;height:100%"></div>
+    <div class="scrim" style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.55) 70%,rgba(0,0,0,.94))"></div>
+    <div class="cap">
+      <div class="nm">${esc(a.name)}</div>
+      <div class="tg">${esc(a.tagline)}</div>
+    </div>
+  </button>`;
+
+/* fill artist lead photographs after the DOM is in place */
+const leadObserver = 'IntersectionObserver' in window
+  ? new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if(!entry.isIntersecting) return;
+        leadObserver.unobserve(entry.target);
+        fillLead(entry.target);
+      });
+    }, {rootMargin:'240px 0px'})
+  : null;
+
+function fillLead(node){
+  const artist = bySlug(node.dataset.lead);
+  if(!artist) return;
+  artistLead(artist).then(url => {
+    if(!url || !node.isConnected) return;
+    node.innerHTML = `<img src="${esc(url)}" alt="${esc(artist.name)}" loading="lazy"
+      style="width:100%;height:100%;object-fit:cover">`;
+  });
+}
+function hydrateLeads(root = document){
+  root.querySelectorAll('[data-lead]').forEach(node => {
+    if(node.dataset.hydrating) return;
+    node.dataset.hydrating = '1';
+    if(leadObserver) leadObserver.observe(node); else fillLead(node);
+  });
+}
+const FEATURED = ['arijit-singh','taylor-swift','lata-mangeshkar','the-weeknd','shreya-ghoshal','freddie-mercury','billie-eilish','atif-aslam']
+  .map(bySlug).filter(Boolean);
+
+/* -------------------------------- HOME -------------------------------- */
+async function renderHome(){
+  view.innerHTML = `
+    <section class="screen active" id="screen-home">
+      <div class="topbar">
+        <div class="row">
+          <div class="brand">
+            <div class="mark"><i style="height:8px"></i><i style="height:14px"></i><i style="height:19px"></i><i style="height:12px"></i><i style="height:7px"></i></div>
+            <div class="brand-name">Artist<b>Walls</b></div>
+          </div>
+          <div class="spacer"></div>
+          <button class="icon-btn" style="width:34px;height:34px" data-go="#/credits" aria-label="Credits">i</button>
+        </div>
+        <div class="sub" style="margin-top:8px">Live photography from Wikimedia Commons — every image credited.</div>
+        <button class="searchbar" style="width:100%;margin-top:12px" data-go="#/search">
+          <span style="color:var(--text-2)">⌕</span>
+          <span style="color:var(--text-3);font-size:13px">Search artists, singers, composers</span>
+        </button>
+      </div>
+      <div id="hero-slot"><div class="hero"><div class="skel" style="height:100%;border-radius:0;aspect-ratio:auto"></div></div></div>
+      <div class="section-head"><div><div class="h2">Featured artists</div>
+        <div class="sub">Hand-picked, photographed live on Commons</div></div></div>
+      <div class="rail">${FEATURED.map(featureCardHTML).join('')}</div>
+      <div class="section-head"><div><div class="h2">Popular Indian singers</div>
+        <div class="sub">16 artists · live gallery</div></div></div>
+      <div class="rail">${INDIAN.map(artistCardHTML).join('')}</div>
+      <div class="section-head"><div><div class="h2">Trending wallpapers</div>
+        <div class="sub">Most-linked music photography on Commons</div></div></div>
+      <div class="grid" id="trending-grid">${'<div class="skel"></div>'.repeat(4)}</div>
+      <div class="section-head"><div><div class="h2">International artists</div>
+        <div class="sub">15 artists · live gallery</div></div></div>
+      <div class="rail">${INTERNATIONAL.map(artistCardHTML).join('')}</div>
+      <div class="section-head"><div><div class="h2">Legendary musicians</div>
+        <div class="sub">Careers that defined music</div></div></div>
+      <div class="rail" id="legendary-rail">${'<div class="skel" style="width:148px"></div>'.repeat(3)}</div>
+      <div class="section-head"><div><div class="h2">Browse categories</div>
+        <div class="sub">Twelve live collections</div></div></div>
+      <div class="rowgap">
+        ${CATEGORIES.map(c => `
+          <button class="cat-row" data-go="#/category/${c.id}">
+            <div style="flex:1;min-width:0">
+              <div class="nm">${esc(c.name)}</div>
+              <div class="bl">${esc(c.blurb)}</div>
+            </div><div class="arw">›</div>
+          </button>`).join('')}
+      </div>
+      <div class="section-head"><div><div class="h2">Recently added</div>
+        <div class="sub">Newest uploads, refreshed every visit</div></div></div>
+      <div class="grid" id="recent-grid">${'<div class="skel"></div>'.repeat(4)}</div>
+      <div class="footnote">
+        <div style="font-size:13.5px;font-weight:500">About the photography</div>
+        <p>ArtistWalls does not own or claim any artist photograph. Every wallpaper is discovered
+        live from Wikimedia Commons and shown only when its licence allows free reuse: public
+        domain, CC0, CC BY or CC BY-SA. Creator, licence and the original file page travel with
+        each image.</p>
+        <button class="section-link" style="margin-top:12px" data-go="#/credits">See all credits</button>
+      </div>
+    </section>`;
+  hydrateLeads();
+
+  dailyWallpaper().then(w => {
+    const slot = document.getElementById('hero-slot');
+    if(!slot) return;
+    if(!w){ slot.innerHTML = stateCard('No daily wallpaper', 'Commons returned nothing for today’s pick.', 'Retry', 'data-retry-home'); return; }
+    slot.innerHTML = `
+      <div class="hero">
+        <img src="${esc(w.preview)}" alt="${esc(w.displayTitle)}" onload="this.classList.add('loaded')">
+        <div class="scrim"></div>
+        <div class="body">
+          <div class="eyebrow"><span class="dot"></span>Daily artist wallpaper</div>
+          <div class="nm">${esc(w.artistName || w.displayTitle)}</div>
+          <div class="meta">${w.width} × ${w.height} · ${esc(w.credit.licence)}</div>
+          <div class="acts">
+            <button class="btn-gold" data-open="${esc(w.id)}">Open</button>
+            <button class="btn-glass" data-download="${esc(w.id)}">Download</button>
+          </div>
+        </div>
+      </div>`;
+    if(!window.__daily) window.__daily = w;
+  }).catch(e => {
+    const slot = document.getElementById('hero-slot');
+    if(slot) slot.innerHTML = `<div style="padding:0 20px">${stateCard('Commons is not reachable', esc(e.message), 'Try again', 'data-retry-home')}</div>`;
+  });
+
+  trendingFeed(0, 12).then(p => {
+    const grid = document.getElementById('trending-grid');
+    if(!grid) return;
+    grid.innerHTML = p.items.length
+      ? p.items.slice(0,8).map(w => tileHTML(w)).join('')
+      : stateCard('Nothing to show', 'Commons returned no trending photographs right now.', 'Retry', 'data-retry-home');
+  }).catch(e => {
+    const grid = document.getElementById('trending-grid');
+    if(grid) grid.innerHTML = stateCard('Couldn’t load trending', esc(e.message), 'Try again', 'data-retry-home');
+  });
+
+  recentFeed(0, 10).then(p => {
+    const grid = document.getElementById('recent-grid');
+    if(!grid) return;
+    grid.innerHTML = p.items.length ? p.items.slice(0,8).map(w => tileHTML(w)).join('') : '';
+  }).catch(()=>{});
+
+  const legendary = byCategory('legendary-artists');
+  categoryFeed(legendary, 0, 10).then(p => {
+    const rail = document.getElementById('legendary-rail');
+    if(!rail) return;
+    rail.innerHTML = p.items.map(w => `
+      <button class="tile" style="width:148px;flex:0 0 auto" data-open="${esc(w.id)}">
+        <img loading="lazy" src="${esc(w.thumb)}" alt="" onload="this.classList.add('loaded')">
+        <div class="scrim"></div>
+        <div class="meta"><div class="nm">${esc(w.artistName || w.displayTitle)}</div>
+        <div class="res">${w.width} × ${w.height}</div></div>
+      </button>`).join('');
+  }).catch(()=>{});
+}
+
+/* ------------------------------- SEARCH ------------------------------- */
+const searchState = { q:'', active:'', filter:'all', items:[], offset:0, hasMore:false, loading:false, searched:false };
+
+async function renderSearch(){
+  view.innerHTML = `
+    <section class="screen active" id="screen-search">
+      <div class="topbar plain">
+        <div class="h1">Search</div>
+        <div class="searchbar" style="margin-top:12px">
+          <span style="color:var(--text-2)">⌕</span>
+          <input id="q" type="search" placeholder="Search artists on Wikimedia Commons" value="${esc(searchState.q)}" autocomplete="off">
+          <button class="x" id="clear-q" aria-label="Clear">✕</button>
+        </div>
+      </div>
+      <div class="tabs" id="filters">
+        <button class="chip on" data-filter="all">All images</button>
+        <button class="chip" data-filter="artists">Artists</button>
+        <button class="chip" data-filter="collections">Collections</button>
+      </div>
+      <div id="suggest"></div>
+      <div class="grid" id="results"></div>
+      <div id="more-wrap" style="padding:16px 20px"></div>
+    </section>`;
+
+  const input = document.getElementById('q');
+  input.addEventListener('input', debounce(onQuery, 260));
+  input.addEventListener('keydown', e => { if(e.key === 'Enter'){ submitSearch(input.value); input.blur(); } });
+  document.getElementById('clear-q').onclick = () => {
+    input.value=''; searchState.q=''; searchState.searched=false; searchState.items=[];
+    renderSuggestions(''); document.getElementById('results').innerHTML=''; document.getElementById('more-wrap').innerHTML='';
+  };
+  document.getElementById('filters').addEventListener('click', e => {
+    const b = e.target.closest('[data-filter]'); if(!b) return;
+    searchState.filter = b.dataset.filter;
+    [...document.querySelectorAll('#filters .chip')].forEach(c => c.classList.toggle('on', c === b));
+    renderSuggestions(input.value);
+    if(searchState.filter === 'all') paintResults(); else document.getElementById('results').innerHTML = '';
+  });
+
+  renderSuggestions(searchState.q);
+  if(searchState.items.length) paintResults();
+  if(!searchState.searched && !searchState.q) renderIdle();
+}
+
+function debounce(fn, ms){ let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+async function onQuery(e){
+  searchState.q = e.target.value;
+  renderSuggestions(searchState.q);
+  if(searchState.q.trim().length >= 2){
+    const wiki = await wikiSuggest(searchState.q).catch(()=>[]);
+    const box = document.getElementById('suggest');
+    if(box && wiki.length) box.insertAdjacentHTML('beforeend', wiki.map(n => `
+      <button class="cat-row" data-search="${esc(n)}"><div style="flex:1;min-width:0">
+        <div class="nm">${esc(n)}</div><div class="bl">Wikipedia suggestion</div></div><div class="arw">›</div></button>`).join(''));
+  }
+}
+
+async function wikiSuggest(q){
+  const url = 'https://en.wikipedia.org/w/api.php?' + new URLSearchParams({
+    action:'opensearch', format:'json', origin:'*', namespace:'0', limit:'5', search:q
+  });
+  const res = await fetch(url);
+  const data = await res.json();
+  return (data && data[1]) || [];
+}
+
+function renderSuggestions(q){
+  const box = document.getElementById('suggest'); if(!box) return;
+  const term = (q||'').trim().toLowerCase();
+  if(term.length < 2){ box.innerHTML = ''; return; }
+  const artists = ALL_ARTISTS.filter(a => a.name.toLowerCase().includes(term) ||
+    a.tokens.some(t => t.startsWith(term))).slice(0,6);
+  const cats = CATEGORIES.filter(c => c.name.toLowerCase().includes(term)).slice(0,3);
+  if(searchState.filter === 'all' && searchState.searched){ box.innerHTML=''; return; }
+  box.innerHTML = `
+    ${artists.length ? `<div class="section-head"><div><div class="h2">Artists</div></div></div>
+      <div class="rowgap">${artists.map(a => `
+        <button class="cat-row" data-artist="${esc(a.slug)}">
+          <div class="ph" data-lead="${esc(a.slug)}" style="width:40px;height:40px;border-radius:999px;overflow:hidden;display:grid;place-items:center;background:linear-gradient(160deg,#14141a,#07070a);font-family:var(--serif);color:var(--gold)">${esc(a.name[0])}</div>
+          <div style="flex:1;min-width:0;text-align:left"><div class="nm">${esc(a.name)}</div>
+            <div class="bl">${esc(a.group)}</div></div><div class="arw">›</div>
+        </button>`).join('')}</div>` : ''}
+    ${cats.length ? `<div class="section-head"><div><div class="h2">Collections</div></div></div>
+      <div class="rowgap">${cats.map(c => `
+        <button class="cat-row" data-go="#/category/${c.id}">
+          <div style="flex:1;min-width:0;text-align:left"><div class="nm">${esc(c.name)}</div>
+            <div class="bl">${esc(c.blurb)}</div></div><div class="arw">›</div>
+        </button>`).join('')}</div>` : ''}`;
+  hydrateLeads(box);
+}
+
+function renderIdle(){
+  const box = document.getElementById('suggest'); if(!box) return;
+  const recent = Store.searches();
+  box.innerHTML = `
+    ${recent.length ? `<div class="section-head"><div><div class="h2">Recent searches</div></div>
+      <button class="section-link" id="clear-history">Clear</button></div>
+      <div class="tabs" style="padding-left:20px">${recent.map(r => `<button class="chip" data-search="${esc(r)}">${esc(r)}</button>`).join('')}</div>` : ''}
+    <div class="state" style="margin-top:12px">
+      <div class="t">Find any artist</div>
+      <div class="m">Type a singer, composer or performer. Results are searched live across Wikimedia
+      Commons and filtered to freely licensed photographs only.</div>
+    </div>`;
+  const clear = document.getElementById('clear-history');
+  if(clear) clear.onclick = () => { Store.clearSearches(); renderIdle(); };
+}
+
+async function submitSearch(raw){
+  const q = (raw ?? '').trim();
+  if(!q) return;
+  searchState.q = q; searchState.active = q; searchState.searched = true;
+  searchState.items = []; searchState.offset = 0; searchState.loading = true;
+  Store.addSearch(q);
+  const box = document.getElementById('suggest'); if(box) box.innerHTML = '';
+  const res = document.getElementById('results');
+  if(res) res.innerHTML = '<div class="spinner" style="grid-column:span 2"></div>';
+  try{
+    const page = await searchFeed(q, 0);
+    searchState.items = page.items; searchState.hasMore = page.hasMore;
+    searchState.offset = page.nextOffset; searchState.loading = false;
+    paintResults();
+  }catch(e){
+    searchState.loading = false;
+    if(res) res.innerHTML = `<div style="grid-column:span 2">${stateCard('Couldn’t search', esc(e.message), 'Try again', 'data-retry-search')}</div>`;
+  }
+}
+
+function paintResults(){
+  const res = document.getElementById('results'); if(!res) return;
+  const more = document.getElementById('more-wrap');
+  if(!searchState.items.length){
+    res.innerHTML = `<div style="grid-column:span 2">${stateCard('No licensed photographs',
+      `Wikimedia Commons has no freely licensed photograph for “${esc(searchState.active)}”.
+       ArtistWalls will not substitute an unauthorised image.`)}</div>`;
+    if(more) more.innerHTML = '';
+    return;
+  }
+  res.innerHTML = searchState.items.map(w => tileHTML(w)).join('');
+  if(more) more.innerHTML = searchState.hasMore
+    ? '<button class="btn-glass" style="width:100%" data-more="search">Load more</button>' : '';
+}
+
+async function loadMoreSearch(){
+  if(searchState.loading || !searchState.hasMore) return;
+  searchState.loading = true;
+  const btn = document.querySelector('[data-more="search"]');
+  if(btn) btn.textContent = 'Loading…';
+  try{
+    const page = await searchFeed(searchState.active, searchState.offset);
+    searchState.items = [...searchState.items, ...page.items];
+    searchState.hasMore = page.hasMore; searchState.offset = page.nextOffset;
+    paintResults();
+  }catch(e){ toast(e.message); }
+  searchState.loading = false;
+}
+</script>
+<script>
+/* ------------------------------ ARTIST -------------------------------- */
+const wpCache = new Map();
+const remember = list => list.forEach(w => wpCache.set(w.id, w));
+
+async function renderArtist(slug){
+  const artist = bySlug(slug);
+  if(!artist){ view.innerHTML = `<section class="screen active">${stateCard('Unknown artist','That artist is not in the catalogue.')}</section>`; return; }
+  const related = relatedTo(artist);
+  view.innerHTML = `
+    <section class="screen active" id="screen-artist" style="padding-bottom:40px">
+      <div class="artist-hero">
+        <div class="ph" id="artist-hero-img" style="position:absolute;inset:0"></div>
+        <div class="scrim"></div>
+        <button class="icon-btn back" data-back>←</button>
+        <div class="body">
+          <div class="eyebrow">${esc(artist.group)}</div>
+          <div class="nm">${esc(artist.name)}</div>
+          <div class="sub" style="margin-top:6px">${esc(artist.tagline)}</div>
+          <div style="margin-top:14px">
+            <a class="btn-glass" href="https://en.wikipedia.org/wiki/${artist.wiki}" target="_blank" rel="noopener">↗ Biography on Wikipedia</a>
+          </div>
+        </div>
+      </div>
+      <div class="section-head"><div><div class="h2">Wallpaper collection</div>
+        <div class="sub" id="artist-count">Loading live from Commons…</div></div></div>
+      <div class="grid" id="artist-grid">${'<div class="skel"></div>'.repeat(6)}</div>
+      <div style="padding:16px 20px" id="artist-more"></div>
+      <div class="section-head"><div><div class="h2">Related artists</div></div></div>
+      <div class="rail">${related.map(artistCardHTML).join('')}</div>
+      <div id="artist-credits"></div>
+    </section>`;
+
+  hydrateLeads();
+  artistLead(artist).then(url => {
+    const box = document.getElementById('artist-hero-img');
+    if(box && url) box.innerHTML = `<img src="${esc(url)}" alt="${esc(artist.name)}" onload="this.classList.add('loaded')" style="width:100%;height:100%;object-fit:cover">`;
+  });
+
+  try{
+    const page = await artistFeed(artist, 0, 24);
+    remember(page.items);
+    artistScreen.page = page; artistScreen.offset = page.nextOffset;
+    paintArtistGrid(page);
+  }catch(e){
+    const grid = document.getElementById('artist-grid');
+    if(grid) grid.innerHTML = `<div style="grid-column:span 2">${stateCard('Couldn’t reach Commons', esc(e.message), 'Try again', 'data-retry-artist')}</div>`;
+  }
+}
+const artistScreen = { page:null, offset:0, more:false };
+
+function paintArtistGrid(page){
+  const grid = document.getElementById('artist-grid');
+  const count = document.getElementById('artist-count');
+  const more = document.getElementById('artist-more');
+  const credits = document.getElementById('artist-credits');
+  if(!grid) return;
+  if(!page.items.length){
+    grid.innerHTML = `<div style="grid-column:span 2">${stateCard('No licensed photographs yet',
+      'Wikimedia Commons currently holds no freely licensed photograph of this artist. ' +
+      'Rather than use a press image without permission, this gallery stays empty until one is published.')}</div>`;
+    if(count) count.textContent = '0 photographs';
+    if(credits) credits.innerHTML = '';
+    return;
+  }
+  grid.innerHTML = page.items.map(w => tileHTML(w)).join('');
+  if(count) count.textContent = `${page.items.length} photographs · live from Commons`;
+  if(more) more.innerHTML = page.hasMore ? '<button class="btn-glass" style="width:100%" data-more="artist">Load more</button>' : '';
+  if(credits) credits.innerHTML = `
+    <div class="footnote">
+      <div style="font-size:13.5px;font-weight:500">Image credits</div>
+      <p>Photographs are the work of their creators on Wikimedia Commons. ArtistWalls claims no
+      ownership. Tap any credit to open the original file page.</p>
+      <div style="margin-top:10px">
+        ${page.items.slice(0,20).map(w => `
+          <a class="credit-item" href="${esc(w.credit.source)}" target="_blank" rel="noopener">
+            <div style="flex:1;min-width:0"><div class="t">${esc(w.displayTitle)}</div>
+            <div class="a">${esc(w.credit.author)} · ${esc(w.credit.licence)}</div></div>
+            <div class="arw">↗</div></a>`).join('')}
+      </div>
+    </div>`;
+}
+
+async function loadMoreArtist(){
+  const artist = bySlug(location.hash.split('/')[2]);
+  if(!artist || artistScreen.more) return;
+  artistScreen.more = true;
+  const btn = document.querySelector('[data-more="artist"]');
+  if(btn) btn.textContent = 'Loading…';
+  try{
+    const page = await artistFeed(artist, artistScreen.offset, 24);
+    remember(page.items);
+    artistScreen.offset = page.nextOffset;
+    const grid = document.getElementById('artist-grid');
+    grid.insertAdjacentHTML('beforeend', page.items.map(w => tileHTML(w)).join(''));
+    const more = document.getElementById('artist-more');
+    more.innerHTML = page.hasMore ? '<button class="btn-glass" style="width:100%" data-more="artist">Load more</button>' : '';
+  }catch(e){ toast(e.message); }
+  artistScreen.more = false;
+}
+
+/* ----------------------------- CATEGORY ------------------------------- */
+const catScreen = { offset:0, more:false };
+
+async function renderCategory(id){
+  const cat = byCategory(id);
+  if(!cat){ view.innerHTML = `<section class="screen active">${stateCard('Unknown collection','That collection does not exist.')}</section>`; return; }
+  view.innerHTML = `
+    <section class="screen active" id="screen-category" style="padding-bottom:40px">
+      <div class="topbar plain">
+        <div class="row" style="gap:12px">
+          <button class="icon-btn" data-back style="background:rgba(255,255,255,.06)">←</button>
+          <div><div class="h2">${esc(cat.name)}</div><div class="sub">${esc(cat.blurb)}</div></div>
+        </div>
+      </div>
+      <div class="grid" id="cat-grid" style="margin-top:8px">${'<div class="skel"></div>'.repeat(6)}</div>
+      <div style="padding:16px 20px" id="cat-more"></div>
+    </section>`;
+  try{
+    const page = await categoryFeed(cat, 0, 24);
+    remember(page.items);
+    catScreen.offset = page.nextOffset;
+    const grid = document.getElementById('cat-grid');
+    if(!page.items.length){
+      grid.innerHTML = `<div style="grid-column:span 2">${stateCard('Nothing licensed yet',
+        'This collection currently has no freely licensed photograph on Wikimedia Commons. ' +
+        'It will fill in on its own as new images are published.')}</div>`;
+    } else {
+      grid.innerHTML = page.items.map(w => tileHTML(w)).join('');
+      document.getElementById('cat-more').innerHTML = page.hasMore
+        ? '<button class="btn-glass" style="width:100%" data-more="category">Load more</button>' : '';
+    }
+  }catch(e){
+    document.getElementById('cat-grid').innerHTML = `<div style="grid-column:span 2">${stateCard('Couldn’t load collection', esc(e.message), 'Try again', 'data-retry-category')}</div>`;
+  }
+}
+
+async function loadMoreCategory(){
+  const cat = byCategory(location.hash.split('/')[2]);
+  if(!cat || catScreen.more) return;
+  catScreen.more = true;
+  const btn = document.querySelector('[data-more="category"]');
+  if(btn) btn.textContent = 'Loading…';
+  try{
+    const page = await categoryFeed(cat, catScreen.offset, 24);
+    remember(page.items);
+    catScreen.offset = page.nextOffset;
+    document.getElementById('cat-grid').insertAdjacentHTML('beforeend', page.items.map(w => tileHTML(w)).join(''));
+    document.getElementById('cat-more').innerHTML = page.hasMore
+      ? '<button class="btn-glass" style="width:100%" data-more="category">Load more</button>' : '';
+  }catch(e){ toast(e.message); }
+  catScreen.more = false;
+}
+
+/* ----------------------------- WALLPAPER ------------------------------ */
+async function renderWallpaper(id){
+  view.innerHTML = `<section class="screen active wp-screen">
+      <div class="full"><div class="scrim"></div></div>
+      <div class="wp-top"><button class="icon-btn" data-back>←</button><div class="spacer"></div></div>
+      <div class="wp-panel"><div class="spinner"></div></div>
+    </section>`;
+  let w = wpCache.get(id);
+  if(!w){ try{ w = await wallpaperByTitle(id); }catch(e){ w = null; } }
+  if(!w){
+    view.innerHTML = `<section class="screen active" style="padding-top:60px">
+      <button class="icon-btn" data-back style="margin-left:16px">←</button>
+      <div style="margin-top:20px">${stateCard('Photograph unavailable',
+        'This file could not be loaded from Wikimedia Commons. It may have been deleted or renamed.')}</div>
+    </section>`;
+    return;
+  }
+  remember([w]); Store.touchRecent(w);
+  const fav = Store.isFavourite(w.id);
+  view.innerHTML = `
+    <section class="screen active wp-screen" id="screen-wp">
+      <div class="full">
+        <img src="${esc(w.preview)}" alt="${esc(w.displayTitle)}" onload="this.classList.add('loaded')">
+        <div class="scrim"></div>
+      </div>
+      <div class="wp-top">
+        <button class="icon-btn" data-back>←</button>
+        <div class="spacer"></div>
+        <button class="icon-btn" data-share="${esc(w.id)}" aria-label="Share">↗</button>
+        <button class="icon-btn" data-fav="${esc(w.id)}" style="color:${fav ? 'var(--gold)' : '#fff'}" aria-label="Favourite">${fav ? '♥' : '♡'}</button>
+      </div>
+      <div class="wp-panel">
+        <div class="row" style="align-items:flex-start;gap:10px">
+          <div style="flex:1;min-width:0">
+            <div class="title">${esc(w.artistName || w.displayTitle)}</div>
+            <div class="subtitle">${esc(w.displayTitle)}</div>
+          </div>
+          <span class="badge ${w.quality === 'PREVIEW_ONLY' ? 'low' : ''}">${w.quality === 'WALLPAPER' ? 'HD' : 'LOW-RES'}</span>
+        </div>
+        <div class="meta-row">
+          <span class="res">${w.width} × ${w.height} · ${((w.width*w.height)/1e6).toFixed(1)} MP</span>
+          <a class="lic-chip" href="${esc(w.credit.licenceUrl)}" target="_blank" rel="noopener">${esc(w.credit.licence)}</a>
+        </div>
+        ${w.quality === 'PREVIEW_ONLY' ? `
+          <div class="sub" style="margin-top:10px;color:var(--text-3)">
+            Only a small original exists on Commons — it may not fill a modern screen.</div>` : ''}
+        <div class="act-row">
+          <button class="btn-gold" data-download="${esc(w.id)}">⤓ Download</button>
+          <button class="btn-glass" data-fav="${esc(w.id)}">${fav ? '♥ Saved' : '♡ Favourite'}</button>
+        </div>
+        <div class="credit-toggle" id="credit-toggle">
+          <span class="tiny" style="color:var(--gold-light);letter-spacing:.14em">Credits &amp; licence</span>
+          <span class="tiny" id="credit-caret">Show</span>
+        </div>
+        <div class="credit-body" id="credit-body" style="display:none">
+          <div class="credit-line"><div class="lb">Photograph by</div><div class="vl">${esc(w.credit.author)}</div></div>
+          <div class="credit-line"><div class="lb">Image title</div><div class="vl">${esc(w.title)}</div></div>
+          <div class="credit-line"><div class="lb">Licence</div><div class="vl">${esc(w.credit.licence)}</div></div>
+          ${w.credit.usageTerms ? `<div class="credit-line"><div class="lb">Usage terms</div><div class="vl">${esc(w.credit.usageTerms)}</div></div>` : ''}
+          <div class="credit-line"><div class="lb">Modification</div><div class="vl">${esc(w.credit.modificationNote)}</div></div>
+          ${w.description ? `<div class="credit-line"><div class="lb">Description</div><div class="vl">${esc(w.description)}</div></div>` : ''}
+          ${w.date ? `<div class="credit-line"><div class="lb">Date</div><div class="vl">${esc(w.date)}</div></div>` : ''}
+          <a class="link-row" href="${esc(w.credit.source)}" target="_blank" rel="noopener">Original file on Wikimedia Commons <span>↗</span></a>
+          <a class="link-row" href="${esc(w.credit.licenceUrl)}" target="_blank" rel="noopener">Licence deed <span>↗</span></a>
+          ${w.artistName && byName(w.artistName) ? `<a class="link-row" href="#/artist/${byName(w.artistName).slug}">More wallpapers of ${esc(w.artistName)} <span>›</span></a>` : ''}
+          <a class="link-row" href="#/credits">All credits in ArtistWalls <span>›</span></a>
+          <div class="tiny" style="margin-top:10px;letter-spacing:.04em;text-transform:none;line-height:1.5">
+            ArtistWalls does not own this photograph. It is shown here under the licence above and
+            remains the property of its creator.
+          </div>
+        </div>
+      </div>
+    </section>`;
+  document.getElementById('credit-toggle').onclick = () => {
+    const body = document.getElementById('credit-body');
+    const caret = document.getElementById('credit-caret');
+    const hidden = body.style.display === 'none';
+    body.style.display = hidden ? '' : 'none';
+    caret.textContent = hidden ? 'Hide' : 'Show';
+  };
+}
+
+async function downloadWallpaper(id){
+  const w = wpCache.get(id) || await wallpaperByTitle(id).catch(()=>null);
+  if(!w) return toast('Could not prepare that image');
+  const name = (w.displayTitle || 'artistwalls').replace(/[^\w.\-]+/g,'_').slice(0,60)
+             + '.' + (w.mime.split('/')[1] || 'jpg');
+  try{
+    const res = await fetch(w.original, {mode:'cors'});
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    Store.markDownloaded(w);
+    toast('Saved · ' + Math.round(blob.size/1024) + ' KB');
+  }catch(e){
+    window.open(w.original, '_blank', 'noopener');
+    Store.markDownloaded(w);
+    toast('Opened the original file — save it from the new tab');
+  }
+}
+
+async function shareWallpaper(id){
+  const w = wpCache.get(id); if(!w) return;
+  const text = `${w.artistName || w.displayTitle}\n\nPhoto: ${w.credit.author}\nLicence: ${w.credit.licence}\nSource: ${w.credit.source}\n\nShared from ArtistWalls — photographs are credited to their creators on Wikimedia Commons.`;
+  if(navigator.share){
+    try{ await navigator.share({title: w.displayTitle, text, url: w.credit.source}); return; }catch(e){}
+  }
+  try{ await navigator.clipboard.writeText(text); toast('Credit copied to clipboard'); }
+  catch(e){ window.open(w.credit.source, '_blank', 'noopener'); }
+}
+
+/* ------------------------------ LIBRARY ------------------------------- */
+const libraryTab = { current:'favourites' };
+
+function renderLibrary(){
+  const favs = Store.favourites(), downs = Store.downloaded(), recents = Store.recent();
+  const map = { favourites:favs, downloaded:downs, recent:recents };
+  const items = map[libraryTab.current] || [];
+  view.innerHTML = `
+    <section class="screen active" id="screen-library">
+      <div class="topbar plain">
+        <div class="h1">Library</div>
+        <div class="sub" style="margin-top:4px">Your favourites, saved files and recently viewed photographs</div>
+      </div>
+      <div class="tabs" id="lib-tabs">
+        <button class="chip ${libraryTab.current==='favourites'?'on':''}" data-tab="favourites">Favourites · ${favs.length}</button>
+        <button class="chip ${libraryTab.current==='downloaded'?'on':''}" data-tab="downloaded">Saved · ${downs.length}</button>
+        <button class="chip ${libraryTab.current==='recent'?'on':''}" data-tab="recent">Recently viewed · ${recents.length}</button>
+      </div>
+      ${items.length
+        ? `<div class="grid">${items.map(w => tileHTML(w, {fav:true})).join('')}</div>`
+        : `<div style="margin-top:6px">${stateCard(
+            libraryTab.current === 'favourites' ? 'No favourites yet'
+            : libraryTab.current === 'downloaded' ? 'Nothing saved yet' : 'No history yet',
+            libraryTab.current === 'favourites'
+              ? 'Tap the heart on any wallpaper and it is kept here — with its photographer and licence.'
+              : libraryTab.current === 'downloaded'
+              ? 'Download a wallpaper and the original file is saved to your device.'
+              : 'Photographs you open will appear here so you can find them again quickly.',
+            'Browse artists', 'data-go="#/search"')}</div>`}
+      <div class="footnote" style="margin-top:22px">
+        <div style="font-size:13.5px;font-weight:500">Stored on this device</div>
+        <p>Favourites, saved files and history live in your browser’s local storage only. Nothing is
+        sent anywhere, and every entry keeps its photographer, licence and source link.</p>
+      </div>
+    </section>`;
+  document.getElementById('lib-tabs').addEventListener('click', e => {
+    const b = e.target.closest('[data-tab]'); if(!b) return;
+    libraryTab.current = b.dataset.tab; renderLibrary();
+  });
+}
+
+/* ------------------------------ CREDITS ------------------------------- */
+function renderCredits(){
+  const all = [...Store.favourites(), ...Store.downloaded(), ...Store.recent()];
+  const seen = new Set(); const credits = [];
+  for(const w of all){ if(!seen.has(w.id)){ seen.add(w.id); credits.push(w); } }
+  view.innerHTML = `
+    <section class="screen active" id="screen-credits">
+      <div class="topbar plain">
+        <div class="h1">Credits &amp; licensing</div>
+        <div class="sub" style="margin-top:4px">Every photograph in ArtistWalls belongs to its creator.</div>
+      </div>
+      <div class="rowgap">
+        <div class="glass" style="padding:18px">
+          <div style="font-size:13.5px;font-weight:500">What this app will show</div>
+          <div class="credit-line"><div class="lb">Accepted</div><div class="vl">Public domain · CC0 · CC BY · CC BY-SA</div></div>
+          <div class="credit-line"><div class="lb">Refused</div><div class="vl">Non-free press images · album covers · fair use · unknown licences · NC/ND terms</div></div>
+          <div class="credit-line"><div class="lb">Credits shown</div><div class="vl">Artist · image title · photographer · licence + licence link · Commons source link</div></div>
+          <div class="credit-line"><div class="lb">Modification</div><div class="vl">None. Original files displayed; previews are scaled by Wikimedia’s servers.</div></div>
+          <div style="font-size:11.5px;color:var(--gold);margin-top:12px">ArtistWalls never claims ownership of artist photographs.</div>
+        </div>
+      </div>
+      <div class="section-head"><div><div class="h2">Photographs in your library</div>
+        <div class="sub">Tap a credit to open the original file page on Wikimedia Commons</div></div></div>
+      <div class="rowgap">
+        ${credits.length ? `<div class="glass" style="padding:6px 16px">
+          ${credits.slice(0,60).map(w => `
+            <a class="credit-item" href="${esc(w.credit.source)}" target="_blank" rel="noopener">
+              <div style="flex:1;min-width:0"><div class="t">${esc(w.displayTitle)}</div>
+              <div class="a">${esc(w.credit.author)} · ${esc(w.credit.licence)}</div></div>
+              <div class="arw">↗</div></a>`).join('')}
+        </div>` : `<div class="state"><div class="t">Nothing saved yet</div>
+          <div class="m">Favourite, download or simply open a wallpaper and its full credit will be listed here.</div></div>`}
+      </div>
+      <div class="section-head"><div><div class="h2">Where the images come from</div></div></div>
+      <div class="rowgap">
+        <div class="glass" style="padding:18px">
+          <a class="link-row" href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons <span>↗</span></a>
+          <a class="link-row" href="https://commons.wikimedia.org/w/api.php" target="_blank" rel="noopener">Wikimedia Commons API <span>↗</span></a>
+          <a class="link-row" href="https://foundation.wikimedia.org/wiki/Policy:Terms_of_Use" target="_blank" rel="noopener">Wikimedia Foundation — reuse of content <span>↗</span></a>
+          <a class="link-row" href="https://creativecommons.org/licenses/" target="_blank" rel="noopener">Creative Commons licences <span>↗</span></a>
+          <p class="sub" style="margin-top:8px">ArtistWalls queries the Commons API live for artist photographs.
+          Only files whose own licence permits free reuse are displayed; if a suitable licensed photograph
+          does not exist, the gallery shows an empty state instead of an unauthorised image.</p>
+          <div class="tiny" style="margin-top:10px;letter-spacing:.06em;text-transform:none">
+            ArtistWalls for the web · same catalogue, same licence gate as the Android app</div>
+        </div>
+      </div>
+    </section>`;
+}
+</script>
+<script>
+/* =============================== router =============================== */
+const NAV_TABS = { home:'home', search:'search', library:'library', credits:'credits' };
+
+function setNav(seg){
+  const tab = NAV_TABS[seg] || null;
+  document.querySelectorAll('#nav button').forEach(b => {
+    b.classList.toggle('on', b.dataset.tab === tab);
+  });
+}
+
+async function route(){
+  const raw = location.hash.replace(/^#\/?/, '');
+  const [seg = 'home', ...rest] = raw.split('/');
+  const arg = decodeURIComponent(rest.join('/') || '');
+  setNav(seg);
+  window.scrollTo({top:0, behavior:'instant'});
+  try{
+    switch(seg){
+      case 'artist':    await renderArtist(arg); break;
+      case 'category':  await renderCategory(arg); break;
+      case 'wallpaper': await renderWallpaper(arg); break;
+      case 'search':    await renderSearch(); break;
+      case 'library':   renderLibrary(); break;
+      case 'credits':   renderCredits(); break;
+      default:          await renderHome();
+    }
+  }catch(e){
+    console.error(e);
+    view.innerHTML = `<section class="screen active" style="padding-top:60px">
+      ${stateCard('Something went wrong', esc(e.message || String(e)), 'Reload', 'data-retry-home')}</section>`;
+  }
+}
+
+/* =========================== interactions ============================= */
+document.addEventListener('click', async (e) => {
+  const go = e.target.closest('[data-go]');
+  if(go){ e.preventDefault(); location.hash = go.dataset.go; return; }
+
+  const artist = e.target.closest('[data-artist]');
+  if(artist){ e.preventDefault(); location.hash = '#/artist/' + artist.dataset.artist; return; }
+
+  const open = e.target.closest('[data-open]');
+  if(open){ e.preventDefault(); location.hash = '#/wallpaper/' + encodeURIComponent(open.dataset.open); return; }
+
+  const dl = e.target.closest('[data-download]');
+  if(dl){ e.preventDefault(); downloadWallpaper(dl.dataset.download); return; }
+
+  const share = e.target.closest('[data-share]');
+  if(share){ e.preventDefault(); shareWallpaper(share.dataset.share); return; }
+
+  const fav = e.target.closest('[data-fav]');
+  if(fav){
+    e.preventDefault();
+    const w = wpCache.get(fav.dataset.fav);
+    if(!w) return;
+    const nowFav = Store.toggleFavourite(w);
+    toast(nowFav ? 'Added to favourites' : 'Removed from favourites');
+    if(location.hash.startsWith('#/wallpaper')) renderWallpaper(w.id);
+    else document.querySelectorAll(`[data-fav="${CSS.escape(w.id)}"]`).forEach(b => {
+      b.textContent = nowFav ? '♥ Saved' : '♡ Favourite';
+      b.style.color = nowFav ? 'var(--gold)' : '';
+    });
+    return;
+  }
+
+  const more = e.target.closest('[data-more]');
+  if(more){
+    e.preventDefault();
+    const kind = more.dataset.more;
+    if(kind === 'search') await loadMoreSearch();
+    if(kind === 'artist') await loadMoreArtist();
+    if(kind === 'category') await loadMoreCategory();
+    return;
+  }
+
+  const s = e.target.closest('[data-search]');
+  if(s){ e.preventDefault(); location.hash = '#/search'; setTimeout(() => submitSearch(s.dataset.search), 60); return; }
+
+  const back = e.target.closest('[data-back]');
+  if(back){ e.preventDefault(); if(history.length > 1) history.back(); else location.hash = '#/home'; return; }
+
+  if(e.target.closest('[data-retry-home]')){ pageCache.clear(); route(); return; }
+  if(e.target.closest('[data-retry-search]')){ submitSearch(searchState.active); return; }
+  if(e.target.closest('[data-retry-artist]')){ route(); return; }
+  if(e.target.closest('[data-retry-category]')){ route(); return; }
+});
+
+/* ================================ boot ================================ */
+if(!location.hash) location.hash = '#/home';
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
