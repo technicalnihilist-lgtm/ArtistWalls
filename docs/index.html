@@ -304,9 +304,144 @@ img{display:block;max-width:100%}
 .tabs{display:flex;gap:8px;overflow-x:auto;padding:0 20px 12px;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .rowgap{display:flex;flex-direction:column;gap:10px;padding:0 20px}
+
+/* =====================================================================
+   FX — Settings: Liquid Glass · 4D Depth · Bounce · macOS animation
+   (every rule is scoped to a body class, so with all switches off the
+    app looks exactly like before)
+   ===================================================================== */
+.set-row{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:16px;border-radius:18px;
+  background:linear-gradient(180deg,var(--glass-strong),var(--glass));border:1px solid var(--border);
+  transition:transform .15s ease}
+.set-row:active{transform:scale(.985)}
+.set-row .st{font-size:14px;font-weight:500}
+.set-row .sd{font-size:11.5px;color:var(--text-2);line-height:1.45;margin-top:3px}
+.sw{position:relative;flex:0 0 auto;width:52px;height:32px;border-radius:999px;background:rgba(255,255,255,.16);
+  transition:background .25s ease;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+.sw::after{content:'';position:absolute;top:2px;left:2px;width:28px;height:28px;border-radius:999px;background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.set-row[aria-checked="true"] .sw{background:var(--gold)}
+.set-row[aria-checked="true"] .sw::after{transform:translateX(20px)}
+
+/* ---------- 1. LIQUID GLASS (iOS 26) ---------- */
+body.fx-glass :is(.nav,.glass,.searchbar,.cat-row,.state,.footnote,.set-row,.wp-panel,.toast,.chip,.btn-glass,.icon-btn,.topbar:not(.plain)){
+  --lg-bg:linear-gradient(135deg,rgba(255,255,255,.17) 0%,rgba(255,255,255,.055) 45%,rgba(255,255,255,.1) 100%);
+  background:var(--lg-bg);
+  border-color:rgba(255,255,255,.16);
+  -webkit-backdrop-filter:blur(22px) saturate(190%) brightness(1.12);
+  backdrop-filter:blur(22px) saturate(190%) brightness(1.12);
+  box-shadow:
+    inset 1.5px 1.5px 1px -.5px rgba(255,255,255,.62),
+    inset -1.5px -1.5px 1px -.5px rgba(255,255,255,.28),
+    inset 0 0 22px rgba(255,255,255,.07),
+    0 10px 30px rgba(0,0,0,.38);
+}
+body.fx-glass .nav{background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.06) 50%,rgba(255,255,255,.12));
+  border-radius:30px;padding:8px 6px;box-shadow:inset 1.5px 1.5px 1px -.5px rgba(255,255,255,.7),inset -1.5px -1.5px 1px -.5px rgba(255,255,255,.3),inset 0 0 26px rgba(255,255,255,.09),0 18px 44px rgba(0,0,0,.55)}
+body.fx-glass .wp-panel{background:linear-gradient(135deg,rgba(255,255,255,.17),rgba(255,255,255,.05) 50%,rgba(255,255,255,.1))}
+body.fx-glass .topbar:not(.plain){background:linear-gradient(180deg,rgba(0,0,0,.7),rgba(0,0,0,.28) 70%,transparent);box-shadow:none;border:0}
+body.fx-glass .tile .top .badge,body.fx-glass .badge{background:rgba(255,255,255,.12);-webkit-backdrop-filter:blur(10px) saturate(180%);backdrop-filter:blur(10px) saturate(180%);
+  box-shadow:inset 1px 1px 1px rgba(255,255,255,.45)}
+/* moving specular sheen across big glass surfaces */
+body.fx-glass :is(.nav,.wp-panel,.glass,.searchbar,.set-row,.cat-row){position:relative}
+body.fx-glass .nav{position:fixed}
+body.fx-glass :is(.nav,.wp-panel,.glass,.set-row)::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
+  background:linear-gradient(115deg,rgba(255,255,255,.26) 0%,rgba(255,255,255,0) 28%,rgba(255,255,255,0) 72%,rgba(255,255,255,.12) 100%);
+  mix-blend-mode:soft-light;opacity:.9}
+body.fx-glass .nav>*{position:relative;z-index:1}
+/* selected tab = glass pill */
+body.fx-glass .nav button{position:relative;transition:color .2s,transform .35s cubic-bezier(.34,1.56,.64,1)}
+body.fx-glass .nav button.on{color:#fff;background:linear-gradient(135deg,rgba(255,255,255,.26),rgba(255,255,255,.08));
+  box-shadow:inset 1.2px 1.2px 1px rgba(255,255,255,.7),inset -1px -1px 1px rgba(255,255,255,.25),0 4px 14px rgba(0,0,0,.35)}
+body.fx-glass .nav button.on svg{stroke:var(--gold-light)}
+body.fx-glass .nav button:active{transform:scale(1.14)}
+body.fx-glass :is(.btn-glass,.chip,.icon-btn):active{transform:scale(.94)}
+/* real refraction (Chromium / Android Chrome) — falls back to blur elsewhere */
+body.fx-glass.fx-refract :is(.nav,.wp-panel,.icon-btn,.searchbar,.toast){
+  -webkit-backdrop-filter:blur(14px) saturate(190%) brightness(1.12) url(#lg-refract);
+  backdrop-filter:blur(14px) saturate(190%) brightness(1.12) url(#lg-refract);
+}
+
+/* ---------- 2. 4D DEPTH ---------- */
+body.fx-depth :is(.tile,.card-feature,.hero,.card-artist,.cat-row){
+  transform:perspective(900px) rotateX(calc((var(--py,0) + var(--gy,0)) * -9deg)) rotateY(calc((var(--px,0) + var(--gx,0)) * 9deg)) translateZ(var(--tz,0px));
+  transform-style:preserve-3d;will-change:transform;
+  transition:transform .55s cubic-bezier(.2,.8,.2,1),box-shadow .55s ease,opacity .2s;
+  box-shadow:calc((var(--px,0) + var(--gx,0)) * -16px) calc(12px + (var(--py,0) + var(--gy,0)) * -10px) 30px -6px rgba(0,0,0,.75),
+             0 2px 0 rgba(255,255,255,.05) inset;
+}
+body.fx-depth :is(.tile,.card-feature,.hero,.card-artist,.cat-row).tilting{
+  transition:transform .09s linear,box-shadow .2s ease;
+  box-shadow:calc(var(--px,0) * -22px) calc(18px + var(--py,0) * -14px) 38px -6px rgba(0,0,0,.85),0 2px 0 rgba(255,255,255,.08) inset;
+}
+body.fx-depth .card-artist{box-shadow:none}
+body.fx-depth .card-artist.tilting{box-shadow:none}
+body.fx-depth .card-artist .ph{box-shadow:calc((var(--px,0) + var(--gx,0)) * -10px) calc(10px + var(--py,0) * -8px) 22px -4px rgba(0,0,0,.8)}
+body.fx-depth .cat-row{box-shadow:calc((var(--px,0) + var(--gx,0)) * -8px) 8px 20px -8px rgba(0,0,0,.7)}
+body.fx-depth :is(.tile,.hero) img{transform:scale(1.12) translate(calc((var(--px,0) + var(--gx,0)) * -7px),calc((var(--py,0) + var(--gy,0)) * -7px));
+  transition:opacity .45s ease,transform .55s cubic-bezier(.2,.8,.2,1)}
+body.fx-depth :is(.tile,.hero,.card-feature).tilting img{transition:opacity .45s ease,transform .09s linear}
+body.fx-depth .tile .meta,body.fx-depth .card-feature .cap,body.fx-depth .hero .body{
+  transform:translate(calc((var(--px,0) + var(--gx,0)) * 5px),calc((var(--py,0) + var(--gy,0)) * 4px));transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+body.fx-depth .tile .top{transform:translate(calc((var(--px,0) + var(--gx,0)) * 7px),calc((var(--py,0) + var(--gy,0)) * 6px));transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+body.fx-depth :is(.tile,.card-feature,.hero)::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:5;opacity:0;transition:opacity .3s;
+  background:radial-gradient(circle at calc(50% + var(--px,0) * 50%) calc(50% + var(--py,0) * 50%),rgba(255,255,255,.26),rgba(255,255,255,0) 55%)}
+body.fx-depth :is(.tile,.card-feature,.hero).tilting::after{opacity:1}
+body.fx-depth :is(.tile,.card-feature):hover{transform:perspective(900px) rotateX(calc((var(--py,0) + var(--gy,0)) * -9deg)) rotateY(calc((var(--px,0) + var(--gx,0)) * 9deg)) translateZ(var(--tz,0px))}
+body.fx-depth .rail{padding-top:12px;padding-bottom:18px;margin-top:-10px;margin-bottom:-14px}
+body.fx-depth .grid{perspective:1200px}
+
+/* ---------- 3 + 4. OPEN / CLOSE ANIMATIONS ---------- */
+/* bounce */
+@keyframes fxBounceIn{
+  0%{opacity:0;transform:scale(.86) translateY(34px)}
+  40%{opacity:1;transform:scale(1.04) translateY(-8px)}
+  62%{transform:scale(.985) translateY(3px)}
+  80%{transform:scale(1.008) translateY(-1px)}
+  100%{opacity:1;transform:none}
+}
+@keyframes fxBounceOut{
+  0%{opacity:1;transform:none}
+  28%{opacity:1;transform:scale(1.035) translateY(-6px)}
+  100%{opacity:0;transform:scale(.88) translateY(40px)}
+}
+/* macOS (genie-style, grows out of the dock / nav) */
+@keyframes fxMacIn{
+  0%{opacity:0;transform:perspective(1100px) translateY(46px) scale(.3,.12) rotateX(-14deg);filter:blur(7px);border-radius:46px}
+  55%{opacity:1;filter:blur(0);border-radius:30px}
+  100%{opacity:1;transform:none;filter:none;border-radius:0}
+}
+@keyframes fxMacOut{
+  0%{opacity:1;transform:none;filter:none;border-radius:0}
+  100%{opacity:0;transform:perspective(1100px) translateY(54px) scale(.22,.08) rotateX(-12deg);filter:blur(6px);border-radius:46px}
+}
+@keyframes fxPop{0%{opacity:0;transform:scale(.9) translateY(-8px)}50%{opacity:1;transform:scale(1.03)}75%{transform:scale(.99)}100%{transform:none}}
+
+body.fx-bounce #view>.screen.active:not(.fx-skip){
+  animation:fxBounceIn .68s cubic-bezier(.22,.9,.28,1) backwards;transform-origin:50% 60%}
+body.fx-bounce #view>.screen.closing{animation:fxBounceOut .28s cubic-bezier(.5,0,.9,.5) forwards;pointer-events:none}
+
+body.fx-mac #view>.screen.active:not(.fx-skip){
+  animation:fxMacIn .52s cubic-bezier(.16,1,.3,1) backwards;transform-origin:50% 100%}
+body.fx-mac #view>.screen.closing{animation:fxMacOut .34s cubic-bezier(.55,0,.9,.4) forwards;transform-origin:50% 100%;pointer-events:none;overflow:hidden}
+/* both on: macOS genie with a spring overshoot */
+body.fx-mac.fx-bounce #view>.screen.active:not(.fx-skip){animation:fxMacIn .66s cubic-bezier(.34,1.45,.5,1) backwards}
+body.fx-mac.fx-bounce #view>.screen.closing{animation:fxMacOut .34s cubic-bezier(.6,-.25,.9,.45) forwards}
+
+body.fx-bounce .toast.show{animation:fxPop .5s cubic-bezier(.34,1.56,.64,1)}
+body.fx-bounce #credit-body{animation:fxPop .5s cubic-bezier(.34,1.56,.64,1);transform-origin:50% 0}
+body.fx-bounce .state{animation:fxPop .55s cubic-bezier(.34,1.56,.64,1) backwards}
+@media(prefers-reduced-motion:reduce){body.fx-bounce #view>.screen,body.fx-mac #view>.screen{animation:none!important}}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="2" seed="7" result="noise"/>
+    <feGaussianBlur in="noise" stdDeviation="3" result="soft"/>
+    <feDisplacementMap in="SourceGraphic" in2="soft" scale="34" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
 <div id="app">
   <!-- screens injected here -->
   <div id="view"></div>
@@ -797,6 +932,7 @@ async function renderHome(){
             <div class="brand-name">Artist<b>Walls</b></div>
           </div>
           <div class="spacer"></div>
+          <button class="icon-btn" style="width:34px;height:34px;margin-right:8px" data-go="#/settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.65 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1.03-1.56V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1Z"/></svg></button>
           <button class="icon-btn" style="width:34px;height:34px" data-go="#/credits" aria-label="Credits">i</button>
         </div>
         <div class="sub" style="margin-top:8px">Live photography from Wikimedia Commons — every image credited.</div>
@@ -1429,7 +1565,7 @@ function setNav(seg){
   });
 }
 
-async function route(){
+async function routeCore(){
   const raw = location.hash.replace(/^#\/?/, '');
   const [seg = 'home', ...rest] = raw.split('/');
   const arg = decodeURIComponent(rest.join('/') || '');
@@ -1443,6 +1579,7 @@ async function route(){
       case 'search':    await renderSearch(); break;
       case 'library':   renderLibrary(); break;
       case 'credits':   renderCredits(); break;
+      case 'settings':  renderSettings(); break;
       default:          await renderHome();
     }
   }catch(e){
@@ -1451,6 +1588,163 @@ async function route(){
       ${stateCard('Something went wrong', esc(e.message || String(e)), 'Reload', 'data-retry-home')}</section>`;
   }
 }
+
+
+/* ============================ FX / SETTINGS ============================ */
+const FX_DEFAULT = { glass:true, depth:true, bounce:true, mac:true };
+const FX = Object.assign({}, FX_DEFAULT, LS.read('aw.fx', {}));
+const IS_CHROMIUM = /Chrome\/|CriOS|Edg\//.test(navigator.userAgent) && !/OPR\//.test(navigator.userAgent);
+
+function applyFx(){
+  const b = document.body.classList;
+  b.toggle('fx-glass',  !!FX.glass);
+  b.toggle('fx-refract', !!FX.glass && IS_CHROMIUM);
+  b.toggle('fx-depth',  !!FX.depth);
+  b.toggle('fx-bounce', !!FX.bounce);
+  b.toggle('fx-mac',    !!FX.mac);
+  if(FX.depth) startMotion(); else stopMotion();
+}
+
+/* ---- 4D depth: pointer / touch tilt + device-motion parallax ---- */
+const DEPTH_SEL = '.tile,.card-feature,.hero,.card-artist,.cat-row';
+let tiltEl = null;
+function tiltAt(el, e){
+  const r = el.getBoundingClientRect();
+  const px = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width  - .5) * 2));
+  const py = Math.max(-1, Math.min(1, ((e.clientY - r.top)  / r.height - .5) * 2));
+  el.style.setProperty('--px', px.toFixed(3));
+  el.style.setProperty('--py', py.toFixed(3));
+  el.style.setProperty('--tz', '22px');
+  el.classList.add('tilting');
+}
+function untilt(el){
+  if(!el) return;
+  el.classList.remove('tilting');
+  el.style.removeProperty('--px'); el.style.removeProperty('--py'); el.style.removeProperty('--tz');
+}
+function onDepthMove(e){
+  if(!FX.depth) return;
+  const el = e.target.closest && e.target.closest(DEPTH_SEL);
+  if(el !== tiltEl){ untilt(tiltEl); tiltEl = el; }
+  if(el) tiltAt(el, e);
+}
+document.addEventListener('pointermove', onDepthMove, {passive:true});
+document.addEventListener('pointerdown', onDepthMove, {passive:true});
+['pointerup','pointercancel'].forEach(t => document.addEventListener(t, () => { untilt(tiltEl); tiltEl = null; }, {passive:true}));
+document.addEventListener('pointerleave', () => { untilt(tiltEl); tiltEl = null; }, true);
+
+let motionOn = false, motionRaf = 0, motionLast = 0;
+function onMotion(ev){
+  if(motionRaf) return;
+  motionRaf = requestAnimationFrame(t => {
+    motionRaf = 0;
+    if(t - motionLast < 32) return;               /* ~30 fps */
+    motionLast = t;
+    if(ev.gamma == null || ev.beta == null) return;
+    const gx = Math.max(-1, Math.min(1, ev.gamma / 35)) * .45;
+    const gy = Math.max(-1, Math.min(1, (ev.beta - 45) / 35)) * .45;
+    const root = document.documentElement.style;
+    root.setProperty('--gx', gx.toFixed(3)); root.setProperty('--gy', gy.toFixed(3));
+  });
+}
+async function startMotion(askPermission){
+  if(motionOn || !('DeviceOrientationEvent' in window)) return;
+  try{
+    if(typeof DeviceOrientationEvent.requestPermission === 'function'){
+      if(!askPermission) return;                  /* iOS needs a tap */
+      const r = await DeviceOrientationEvent.requestPermission();
+      if(r !== 'granted') return;
+    }
+    window.addEventListener('deviceorientation', onMotion, {passive:true});
+    motionOn = true;
+  }catch(e){}
+}
+function stopMotion(){
+  window.removeEventListener('deviceorientation', onMotion);
+  motionOn = false;
+  document.documentElement.style.removeProperty('--gx');
+  document.documentElement.style.removeProperty('--gy');
+  untilt(tiltEl); tiltEl = null;
+}
+/* iOS: first tap grants motion permission */
+document.addEventListener('pointerdown', () => { if(FX.depth) startMotion(true); }, {once:true, passive:true});
+
+/* ---- open / close transitions ---- */
+const SCREEN_DEPTH = { artist:1, category:1, settings:1, wallpaper:2 };
+let lastSeg = null, routeToken = 0, firstScreenSeen = false;
+
+/* only the first screen of a route animates; spinner → content swaps and re-renders stay calm */
+new MutationObserver(muts => {
+  for(const m of muts) for(const n of m.addedNodes){
+    if(!(n instanceof HTMLElement) || !n.classList.contains('screen')) continue;
+    if(firstScreenSeen) n.classList.add('fx-skip'); else firstScreenSeen = true;
+  }
+}).observe(view, {childList:true});
+
+function playClose(){
+  return new Promise(res => {
+    const cur = view.querySelector(':scope > .screen');
+    if(!cur || !(FX.bounce || FX.mac) || matchMedia('(prefers-reduced-motion:reduce)').matches) return res();
+    cur.classList.add('closing');
+    setTimeout(res, FX.mac ? 340 : 280);
+  });
+}
+
+async function route(){
+  const raw = location.hash.replace(/^#\/?/, '');
+  const seg = raw.split('/')[0] || 'home';
+  const token = ++routeToken;
+  const closing = lastSeg !== null && (SCREEN_DEPTH[seg] || 0) < (SCREEN_DEPTH[lastSeg] || 0);
+  lastSeg = seg;
+  if(closing) await playClose();
+  if(token !== routeToken) return;                /* a newer navigation took over */
+  firstScreenSeen = false;
+  return routeCore();
+}
+
+/* ------------------------------ SETTINGS ------------------------------ */
+const FX_ROWS = [
+  {k:'glass',  t:'Liquid Glass',        d:'iOS 26 style true liquid glass — translucent layers, refraction, glowing edges and a glass selection pill.'},
+  {k:'depth',  t:'4D Depth Effect',     d:'Cards tilt in 3D with touch, mouse and phone motion — with parallax photos, moving shadows and a light glare.'},
+  {k:'bounce', t:'Bounce Open / Close', d:'Screens spring open with a bounce and bounce away when you go back.'},
+  {k:'mac',    t:'macOS Open / Close',  d:'Genie-style window animation like macOS — screens grow out of the dock and shrink back into it.'}
+];
+function renderSettings(){
+  view.innerHTML = `
+    <section class="screen active" id="screen-settings">
+      <div class="topbar plain">
+        <div class="row" style="gap:12px">
+          <button class="icon-btn" data-back aria-label="Back">←</button>
+          <div class="h1">Settings</div>
+        </div>
+        <div class="sub" style="margin-top:8px">Visual effects and animations. Saved on this device.</div>
+      </div>
+      <div class="rowgap" id="fx-list">
+        ${FX_ROWS.map(r => `
+          <button class="set-row" role="switch" aria-checked="${FX[r.k] ? 'true' : 'false'}" data-fx="${r.k}">
+            <div style="flex:1;min-width:0"><div class="st">${r.t}</div><div class="sd">${r.d}</div></div>
+            <span class="sw"></span>
+          </button>`).join('')}
+      </div>
+      <div class="footnote">
+        <div style="font-size:13.5px;font-weight:500">Good to know</div>
+        <p>Turn on both animation switches to get the macOS genie with a springy bounce. Real glass refraction
+        shows in Chrome / Android; other browsers get the blurred glass with glowing edges. Animations respect your
+        device’s “reduce motion” setting.</p>
+      </div>
+    </section>`;
+  document.getElementById('fx-list').addEventListener('click', e => {
+    const b = e.target.closest('[data-fx]'); if(!b) return;
+    const k = b.dataset.fx;
+    FX[k] = !FX[k];
+    LS.write('aw.fx', FX);
+    b.setAttribute('aria-checked', FX[k] ? 'true' : 'false');
+    if(k === 'depth' && FX.depth) startMotion(true);
+    applyFx();
+  });
+}
+
+applyFx();
 
 /* =========================== interactions ============================= */
 document.addEventListener('click', async (e) => {
