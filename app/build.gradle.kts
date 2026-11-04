@@ -9,13 +9,14 @@ plugins {
 android {
     namespace = "com.artistwalls.app"
     compileSdk = 35
+    buildToolsVersion = "35.0.0"
 
     defaultConfig {
         applicationId = "com.artistwalls.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
         vectorDrawables { useSupportLibrary = true }
         resourceConfigurations += listOf("en")
     }
