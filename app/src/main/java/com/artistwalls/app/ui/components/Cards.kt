@@ -129,17 +129,27 @@ fun FeaturedArtistCard(
     modifier: Modifier = Modifier
 ) {
     val fx = LocalFxSettings.current
+    val tilt = rememberTiltState()
     Box(
         modifier = modifier
             .width(168.dp)
             .aspectRatio(0.78f)
-            .depthTilt(enabled = fx.depth, maxDegrees = 7f)
+            .depthTilt(
+                enabled = fx.depth,
+                state = tilt,
+                maxDegrees = fx.values.tilt,
+                glareAmount = fx.values.glare,
+                lift = fx.values.lift,
+                shadow = fx.values.shadow
+            )
             .clip(RoundedCornerShape(22.dp))
             .clickable(onClick = onClick)
     ) {
         ArtistPhoto(
             artist = artist,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .parallax(tilt, fx.values.parallax),
             shape = RoundedCornerShape(22.dp)
         )
         Box(modifier = Modifier.fillMaxSize().photoScrim())
@@ -176,17 +186,27 @@ fun WallpaperTile(
     isFavorite: Boolean = false
 ) {
     val fx = LocalFxSettings.current
+    val tilt = rememberTiltState()
     Box(
         modifier = modifier
             .aspectRatio(0.68f)
-            .depthTilt(enabled = fx.depth)
+            .depthTilt(
+                enabled = fx.depth,
+                state = tilt,
+                maxDegrees = fx.values.tilt,
+                glareAmount = fx.values.glare,
+                lift = fx.values.lift,
+                shadow = fx.values.shadow
+            )
             .clip(RoundedCornerShape(18.dp))
             .clickable(onClick = onClick)
     ) {
         RemoteImage(
             url = wallpaper.thumbUrl,
             contentDescription = wallpaper.displayTitle,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .parallax(tilt, fx.values.parallax),
             shape = RoundedCornerShape(18.dp)
         )
         Box(modifier = Modifier.fillMaxSize().photoScrim(0.7f))
@@ -239,18 +259,28 @@ fun DailyHeroCard(
     modifier: Modifier = Modifier
 ) {
     val fx = LocalFxSettings.current
+    val tilt = rememberTiltState()
     Box(
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(1.32f)
-            .depthTilt(enabled = fx.depth, maxDegrees = 5f)
+            .depthTilt(
+                enabled = fx.depth,
+                state = tilt,
+                maxDegrees = fx.values.tilt,
+                glareAmount = fx.values.glare,
+                lift = fx.values.lift,
+                shadow = fx.values.shadow
+            )
             .clip(RoundedCornerShape(26.dp))
             .clickable(onClick = onOpen)
     ) {
         RemoteImage(
             url = wallpaper.thumbUrl,
             contentDescription = wallpaper.displayTitle,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .parallax(tilt, fx.values.parallax),
             contentScale = ContentScale.Crop,
             shape = RoundedCornerShape(26.dp)
         )
@@ -309,10 +339,18 @@ fun CategoryCard(
     countLabel: String? = null
 ) {
     val fx = LocalFxSettings.current
+    val tilt = rememberTiltState()
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .depthTilt(enabled = fx.depth, maxDegrees = 4f)
+            .depthTilt(
+                enabled = fx.depth,
+                state = tilt,
+                maxDegrees = fx.values.tilt,
+                glareAmount = fx.values.glare,
+                lift = fx.values.lift,
+                shadow = fx.values.shadow
+            )
             .glass(RoundedCornerShape(18.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 16.dp),
