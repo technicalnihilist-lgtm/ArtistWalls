@@ -22,6 +22,10 @@ class ArtistWallsApp : Application(), ImageLoaderFactory {
      * disk cache is what makes scrolling and offline favourites feel instant.
      */
     override fun newImageLoader(): ImageLoader = ImageLoader.Builder(this)
+        // Wikimedia's image servers reject requests that carry a generic library User-Agent
+        // (OkHttp's default `okhttp/4.12.0` gets HTTP 403). Reusing the app's client means every
+        // photograph goes out with the same descriptive User-Agent the API calls use.
+        .okHttpClient { container.okHttpClient }
         .memoryCache {
             MemoryCache.Builder(this)
                 .maxSizePercent(0.25)
